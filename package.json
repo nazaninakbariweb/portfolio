@@ -1,0 +1,12 @@
+{
+  "name": "nazanin-akbari-portfolio",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @portfolio/web",
+    "build": "npm run build --workspace @portfolio/web"
+  }
+}
