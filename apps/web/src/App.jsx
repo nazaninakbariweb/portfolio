@@ -61,8 +61,6 @@ function HomeHeader() {
       <Link to="/projects">GALLERY</Link>
       <Link to="/projects?category=Research">RESEARCH</Link>
       <Link to="/contact">COLLABORATION</Link>
-      <Link to="/contact">CONTACT</Link>
-      <Link to="/about">ABOUT</Link>
       <button type="button" aria-label={searchOpen ? 'Close search' : 'Search projects'} onClick={() => setSearchOpen((open) => !open)}>
         {searchOpen ? <span className="search-close">×</span> : <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 5 5" /></svg>}
       </button>
@@ -70,6 +68,10 @@ function HomeHeader() {
     <Link className="experience-brand" to="/" aria-label="Nazanin Akbari home">
       <strong>NAZANIN AKBARI</strong>
     </Link>
+    <nav className="experience-actions" aria-label="Contact and about">
+      <Link to="/contact">CONTACT</Link>
+      <Link to="/about">ABOUT</Link>
+    </nav>
     {searchOpen && <form className="experience-search" onSubmit={submitSearch}>
       <input autoFocus value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} aria-label="Search projects" placeholder="Search projects" />
       <button type="submit" aria-label="Submit search">↗</button>
