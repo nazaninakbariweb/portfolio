@@ -61,17 +61,16 @@ function HomeHeader() {
       <Link to="/projects">GALLERY</Link>
       <Link to="/projects?category=Research">RESEARCH</Link>
       <Link to="/contact">COLLABORATION</Link>
-      <Link to="/about">ABOUT</Link>
-    </nav>
-    <Link className="experience-brand" to="/" aria-label="Nazanin Akbari home">
-      <strong>NAZANIN AKBARI</strong><span>EXPERIENCE</span>
-    </Link>
-    <div className="experience-actions">
-      <Link to="/contact">CONTACT</Link>
-      <a href="https://nazanin-akbari-portfolio.sanity.studio/" target="_blank" rel="noreferrer">LOGIN</a>
       <button type="button" aria-label={searchOpen ? 'Close search' : 'Search projects'} onClick={() => setSearchOpen((open) => !open)}>
         {searchOpen ? <span className="search-close">×</span> : <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 5 5" /></svg>}
       </button>
+    </nav>
+    <Link className="experience-brand" to="/" aria-label="Nazanin Akbari home">
+      <strong>NAZANIN AKBARI</strong>
+    </Link>
+    <div className="experience-actions">
+      <Link to="/contact">CONTACT</Link>
+      <Link to="/about">ABOUT</Link>
     </div>
     {searchOpen && <form className="experience-search" onSubmit={submitSearch}>
       <input autoFocus value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} aria-label="Search projects" placeholder="Search projects" />
