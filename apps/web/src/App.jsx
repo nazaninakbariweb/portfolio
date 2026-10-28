@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { client, imageUrl } from './sanity.js'
 
@@ -105,6 +105,7 @@ function HomePage() {
   const navigate = useNavigate()
   const { projects } = useProjects(`*[_type == "project" && defined(slug.current) && defined(cover.asset)] | order(featured desc, year desc){_id, title, category, year, cover}`)
   const [activeHeroImage, setActiveHeroImage] = useState(0)
+  const experienceRef = useRef(null)
   const slides = projects.length
     ? projects.map((project) => ({
         title: project.title,
@@ -130,6 +131,55 @@ function HomePage() {
     next.src = slides[(slideIndex + 1) % slides.length].src
   }, [slideIndex, slides.length])
 
+  useEffect(() => {
+    const sections = [...(experienceRef.current?.querySelectorAll('.home-experience__section') || [])]
+    if (sections.length < 2) return
+
+    let activeSection = sections.reduce((closest, section, index) => {
+      const distance = Math.abs(section.getBoundingClientRect().top)
+      return distance < closest.distance ? { index, distance } : closest
+    }, { index: 0, distance: Infinity }).index
+    let previousY = window.scrollY
+    let locked = false
+    let settleTimer
+    let fallbackTimer
+
+    function onScroll() {
+      const currentY = window.scrollY
+      const direction = Math.sign(currentY - previousY)
+      previousY = currentY
+
+      if (locked) {
+        window.clearTimeout(settleTimer)
+        settleTimer = window.setTimeout(() => { locked = false }, 220)
+        return
+      }
+
+      const currentSection = sections[activeSection]
+      const sectionTop = currentSection.getBoundingClientRect().top + currentY
+      const threshold = currentSection.getBoundingClientRect().height / 3
+      let targetSection = activeSection
+
+      if (direction > 0 && activeSection < sections.length - 1 && currentY >= sectionTop + threshold) targetSection += 1
+      if (direction < 0 && activeSection > 0 && currentY <= sectionTop - threshold) targetSection -= 1
+      if (targetSection === activeSection) return
+
+      activeSection = targetSection
+      locked = true
+      window.clearTimeout(fallbackTimer)
+      fallbackTimer = window.setTimeout(() => { locked = false }, 1600)
+      const targetTop = sections[targetSection].getBoundingClientRect().top + currentY
+      window.scrollTo({ top: targetTop, behavior: 'smooth' })
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.clearTimeout(settleTimer)
+      window.clearTimeout(fallbackTimer)
+    }
+  }, [])
+
   const categorySlides = categories.map((category) => {
     const project = projects.find((item) => item.category?.toLowerCase() === category.toLowerCase())
     const fallback = placeholderSlides.find((item) => item.category === category)
@@ -142,9 +192,10 @@ function HomePage() {
   return <main
     id="top"
     className="home-experience"
+    ref={experienceRef}
   >
     <div className="home-experience__track">
-      <section className="home-hero" aria-label="Home">
+      <section className="home-hero home-experience__section" aria-label="Home">
         <img className="home-hero__image" key={currentSlide.src} src={currentSlide.src} alt="" fetchPriority={slideIndex === 0 ? 'high' : 'auto'} />
         <div className="home-hero__shade" aria-hidden="true" />
         <a className="experience-scroll" href="#category-projects" aria-label="Scroll to categories">
@@ -155,7 +206,7 @@ function HomePage() {
         key={category}
         id={category === 'Projects' ? 'category-projects' : undefined}
         type="button"
-        className="home-category-slide"
+        className="home-category-slide home-experience__section"
         style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.28)), url("${image}")` }}
         onClick={() => navigate(`/projects?category=${encodeURIComponent(category)}`)}
         aria-label={`Open ${category} projects`}
