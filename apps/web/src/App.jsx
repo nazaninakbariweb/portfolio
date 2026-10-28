@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { client, imageUrl } from './sanity.js'
 
@@ -105,7 +105,6 @@ function HomePage() {
   const navigate = useNavigate()
   const { projects } = useProjects(`*[_type == "project" && defined(slug.current) && defined(cover.asset)] | order(featured desc, year desc){_id, title, category, year, cover}`)
   const [activeHeroImage, setActiveHeroImage] = useState(0)
-  const experienceRef = useRef(null)
   const slides = projects.length
     ? projects.map((project) => ({
         title: project.title,
@@ -131,107 +130,6 @@ function HomePage() {
     next.src = slides[(slideIndex + 1) % slides.length].src
   }, [slideIndex, slides.length])
 
-  useEffect(() => {
-    const sections = [...(experienceRef.current?.querySelectorAll('.home-experience__section') || [])]
-    if (sections.length < 2) return
-
-    let activeSection = sections.reduce((closest, section, index) => {
-      const distance = Math.abs(section.getBoundingClientRect().top)
-      return distance < closest.distance ? { index, distance } : closest
-    }, { index: 0, distance: Infinity }).index
-    let previousY = window.scrollY
-    let locked = false
-    let settleTimer
-    let fallbackTimer
-    let animationFrame = null
-    let originalScrollBehavior = ''
-
-    function nearestSectionIndex() {
-      return sections.reduce((closest, section, index) => {
-        const distance = Math.abs(section.getBoundingClientRect().top)
-        return distance < closest.distance ? { index, distance } : closest
-      }, { index: 0, distance: Infinity }).index
-    }
-
-    function animateTo(targetTop) {
-      const startY = window.scrollY
-      const distance = targetTop - startY
-      const duration = 1150
-      const startTime = performance.now()
-      originalScrollBehavior = document.documentElement.style.scrollBehavior
-      document.documentElement.style.scrollBehavior = 'auto'
-
-      function frame(now) {
-        const progress = Math.min(1, (now - startTime) / duration)
-        const eased = progress < .5
-          ? 4 * progress * progress * progress
-          : 1 - Math.pow(-2 * progress + 2, 3) / 2
-        window.scrollTo(0, startY + distance * eased)
-        if (progress < 1) {
-          animationFrame = window.requestAnimationFrame(frame)
-        } else {
-          window.scrollTo(0, targetTop)
-          animationFrame = null
-          document.documentElement.style.scrollBehavior = originalScrollBehavior
-        }
-      }
-
-      animationFrame = window.requestAnimationFrame(frame)
-    }
-
-    function cancelAnimation() {
-      if (animationFrame === null) return
-      window.cancelAnimationFrame(animationFrame)
-      animationFrame = null
-      document.documentElement.style.scrollBehavior = originalScrollBehavior
-      window.clearTimeout(fallbackTimer)
-      window.clearTimeout(settleTimer)
-      activeSection = nearestSectionIndex()
-      previousY = window.scrollY
-      locked = false
-    }
-
-    function onScroll() {
-      const currentY = window.scrollY
-      const direction = Math.sign(currentY - previousY)
-      previousY = currentY
-
-      if (locked) {
-        window.clearTimeout(settleTimer)
-        settleTimer = window.setTimeout(() => { locked = false }, 220)
-        return
-      }
-
-      const currentSection = sections[activeSection]
-      const sectionTop = currentSection.getBoundingClientRect().top + currentY
-      const threshold = currentSection.getBoundingClientRect().height / 3
-      let targetSection = activeSection
-
-      if (direction > 0 && activeSection < sections.length - 1 && currentY >= sectionTop + threshold) targetSection += 1
-      if (direction < 0 && activeSection > 0 && currentY <= sectionTop - threshold) targetSection -= 1
-      if (targetSection === activeSection) return
-
-      activeSection = targetSection
-      locked = true
-      window.clearTimeout(fallbackTimer)
-      fallbackTimer = window.setTimeout(() => { locked = false }, 1900)
-      const targetTop = sections[targetSection].getBoundingClientRect().top + currentY
-      animateTo(targetTop)
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('wheel', cancelAnimation, { passive: true })
-    window.addEventListener('touchstart', cancelAnimation, { passive: true })
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('wheel', cancelAnimation)
-      window.removeEventListener('touchstart', cancelAnimation)
-      if (animationFrame !== null) window.cancelAnimationFrame(animationFrame)
-      document.documentElement.style.scrollBehavior = originalScrollBehavior
-      window.clearTimeout(settleTimer)
-      window.clearTimeout(fallbackTimer)
-    }
-  }, [])
 
   const categorySlides = categories.map((category) => {
     const project = projects.find((item) => item.category?.toLowerCase() === category.toLowerCase())
@@ -245,10 +143,9 @@ function HomePage() {
   return <main
     id="top"
     className="home-experience"
-    ref={experienceRef}
   >
     <div className="home-experience__track">
-      <section className="home-hero home-experience__section" aria-label="Home">
+      <section className="home-hero" aria-label="Home">
         <img className="home-hero__image" key={currentSlide.src} src={currentSlide.src} alt="" fetchPriority={slideIndex === 0 ? 'high' : 'auto'} />
         <div className="home-hero__shade" aria-hidden="true" />
         <a className="experience-scroll" href="#category-projects" aria-label="Scroll to categories">
@@ -259,7 +156,7 @@ function HomePage() {
         key={category}
         id={category === 'Projects' ? 'category-projects' : undefined}
         type="button"
-        className="home-category-slide home-experience__section"
+        className="home-category-slide"
         style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.28)), url("${image}")` }}
         onClick={() => navigate(`/projects?category=${encodeURIComponent(category)}`)}
         aria-label={`Open ${category} projects`}

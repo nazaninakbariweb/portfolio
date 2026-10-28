@@ -86,7 +86,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 /* Full-screen photographic home page based on the supplied reference. */
 .site-footer--hidden { display: none; }
 .experience-header {
-  position: absolute;
+  position: fixed;
   z-index: 20;
   top: 0;
   left: 0;
