@@ -143,6 +143,53 @@ function HomePage() {
     let locked = false
     let settleTimer
     let fallbackTimer
+    let animationFrame = null
+    let originalScrollBehavior = ''
+
+    function nearestSectionIndex() {
+      return sections.reduce((closest, section, index) => {
+        const distance = Math.abs(section.getBoundingClientRect().top)
+        return distance < closest.distance ? { index, distance } : closest
+      }, { index: 0, distance: Infinity }).index
+    }
+
+    function animateTo(targetTop) {
+      const startY = window.scrollY
+      const distance = targetTop - startY
+      const duration = 1150
+      const startTime = performance.now()
+      originalScrollBehavior = document.documentElement.style.scrollBehavior
+      document.documentElement.style.scrollBehavior = 'auto'
+
+      function frame(now) {
+        const progress = Math.min(1, (now - startTime) / duration)
+        const eased = progress < .5
+          ? 4 * progress * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2
+        window.scrollTo(0, startY + distance * eased)
+        if (progress < 1) {
+          animationFrame = window.requestAnimationFrame(frame)
+        } else {
+          window.scrollTo(0, targetTop)
+          animationFrame = null
+          document.documentElement.style.scrollBehavior = originalScrollBehavior
+        }
+      }
+
+      animationFrame = window.requestAnimationFrame(frame)
+    }
+
+    function cancelAnimation() {
+      if (animationFrame === null) return
+      window.cancelAnimationFrame(animationFrame)
+      animationFrame = null
+      document.documentElement.style.scrollBehavior = originalScrollBehavior
+      window.clearTimeout(fallbackTimer)
+      window.clearTimeout(settleTimer)
+      activeSection = nearestSectionIndex()
+      previousY = window.scrollY
+      locked = false
+    }
 
     function onScroll() {
       const currentY = window.scrollY
@@ -167,14 +214,20 @@ function HomePage() {
       activeSection = targetSection
       locked = true
       window.clearTimeout(fallbackTimer)
-      fallbackTimer = window.setTimeout(() => { locked = false }, 1600)
+      fallbackTimer = window.setTimeout(() => { locked = false }, 1900)
       const targetTop = sections[targetSection].getBoundingClientRect().top + currentY
-      window.scrollTo({ top: targetTop, behavior: 'smooth' })
+      animateTo(targetTop)
     }
 
     window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('wheel', cancelAnimation, { passive: true })
+    window.addEventListener('touchstart', cancelAnimation, { passive: true })
     return () => {
       window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('wheel', cancelAnimation)
+      window.removeEventListener('touchstart', cancelAnimation)
+      if (animationFrame !== null) window.cancelAnimationFrame(animationFrame)
+      document.documentElement.style.scrollBehavior = originalScrollBehavior
       window.clearTimeout(settleTimer)
       window.clearTimeout(fallbackTimer)
     }
