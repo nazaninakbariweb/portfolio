@@ -7,6 +7,7 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace @portfolio/web",
-    "build": "npm run build --workspace @portfolio/web"
+    "dev:studio": "npm run dev --workspace @portfolio/studio",
+    "build": "npm run build --workspace @portfolio/web && npm run build --workspace @portfolio/studio"
   }
 }

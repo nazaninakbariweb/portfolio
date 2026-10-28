@@ -5,13 +5,13 @@ Portfolio website and content management workspace.
 ## Project structure
 
 - `apps/web` — the public React website.
-- `apps/studio` — the Sanity content studio (to be created in the next setup step).
+- `apps/studio` — the Sanity content studio for managing portfolio projects.
 
 ## Getting started
 
-Install dependencies from the repository root with `npm install`, then start the website with `npm run dev`.
+Install dependencies from the repository root with `npm install`, then start the website with `npm run dev` or the content studio with `npm run dev:studio`.
 
-The Sanity project and Cloudflare deployment will be connected after the initial website scaffold is in place.
+The Sanity project is `Nazanin Portfolio`, using the `production` dataset. Cloudflare deployment will be connected after the website is ready.
 
 ## Environment and secrets
 
