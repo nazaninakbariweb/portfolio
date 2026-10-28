@@ -209,9 +209,6 @@ function HomePage() {
       <section className="home-hero" aria-label="Home">
         <img className="home-hero__image" key={currentSlide.src} src={currentSlide.src} alt="" fetchPriority={slideIndex === 0 ? 'high' : 'auto'} />
         <div className="home-hero__shade" aria-hidden="true" />
-        <section className="experience-message" aria-label="Welcome">
-          <h1><span>BEAUTY IS AN EXPERIENCE</span><span>ELEGANCE IS AN EMOTION</span></h1>
-        </section>
         <button type="button" className="experience-scroll" aria-label="Next slide" onClick={() => moveToSlide(1)}>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v15m-6-6 6 6 6-6" /></svg>
         </button>
