@@ -56,11 +56,10 @@ function HomeHeader() {
 
   return <header className="experience-header">
     <nav className="experience-nav" aria-label="Main navigation">
-      <Link to="/projects?category=Projects">WORKS</Link>
-      <Link to="/about">WORDS</Link>
-      <Link to="/projects?category=Projects">GALLERY</Link>
-      <Link to="/projects?category=Explorations">RESEARCH</Link>
-      <Link to="/projects?category=Collaborations">COLLABORATION</Link>
+      <Link to="/projects?category=Projects">PROJECTS</Link>
+      <Link to="/projects?category=Collaborations">COLLABORATIONS</Link>
+      <Link to="/projects?category=Objects">OBJECTS</Link>
+      <Link to="/projects?category=Explorations">EXPLORATIONS</Link>
       <button type="button" aria-label={searchOpen ? 'Close search' : 'Search projects'} onClick={() => setSearchOpen((open) => !open)}>
         {searchOpen ? <span className="search-close">×</span> : <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 5 5" /></svg>}
       </button>
