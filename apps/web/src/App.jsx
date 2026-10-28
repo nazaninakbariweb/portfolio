@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Link, Route, Routes, useParams } from 'react-router-dom'
+import { BrowserRouter, Link, Route, Routes, useLocation, useParams } from 'react-router-dom'
 import { client, imageUrl } from './sanity.js'
 
 const projectFields = `
@@ -21,8 +21,9 @@ function useProjects(query, params = {}) {
 }
 
 function SiteLayout() {
+  const { pathname } = useLocation()
   return <>
-    <header className="site-header">
+    <header className={`site-header${pathname === '/' ? ' site-header--overlay' : ''}`}>
       <Link className="wordmark" to="/" aria-label="Nazanin Akbari home">NA<span>.</span></Link>
       <nav aria-label="Main navigation"><Link to="/projects">Projects</Link><Link to="/about">About</Link><Link to="/contact">Contact</Link></nav>
       <span className="header-note">Architecture · Interiors</span>
@@ -35,32 +36,101 @@ function SiteLayout() {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
-    <footer className="site-footer">
+    <footer className={`site-footer${pathname === '/' ? ' site-footer--hidden' : ''}`}>
       <div><p className="eyebrow">Have a project in mind?</p><Link className="footer-title" to="/contact">Let’s talk <span>↗</span></Link></div>
       <div className="footer-meta"><span>© Nazanin Akbari 2026</span><span>Architecture · Interiors</span><a href="#top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Back to top ↑</a></div>
     </footer>
   </>
 }
 
+const placeholderSlides = [
+  {
+    title: 'Architecture',
+    category: 'Architecture',
+    src: 'https://images.unsplash.com/photo-1704461539031-e7c2145e5fc4?auto=format&fit=crop&w=2400&q=85',
+  },
+  {
+    title: 'Material & light',
+    category: 'Interior',
+    src: 'https://images.unsplash.com/photo-1707638121258-eb6241971802?auto=format&fit=crop&w=2400&q=85',
+  },
+  {
+    title: 'Spaces for living',
+    category: 'Research',
+    src: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=2400&q=85',
+  },
+  {
+    title: 'Form & context',
+    category: 'Installation',
+    src: 'https://images.unsplash.com/photo-1585674550411-3f7eed56b3e7?auto=format&fit=crop&w=2400&q=85',
+  },
+]
+
+const homeCategories = ['Architecture', 'Interior', 'Installation', 'Research']
+
 function HomePage() {
-  const { projects, loading, error } = useProjects(`*[_type == "project" && defined(slug.current)] | order(featured desc, year desc)[0...3]{${projectFields}}`)
-  return <main id="top">
-    <section className="hero">
-      <p className="eyebrow">Independent architect & designer</p>
-      <h1>Spaces shaped<br />by <em>light</em> and life.</h1>
-      <div className="hero-bottom"><p>Thoughtful architecture and interiors<br />for the way we live.</p><Link className="text-link" to="/projects">Explore selected work <span>↘</span></Link></div>
-      <div className="hero-art" aria-hidden="true"><div className="art-wall"></div><div className="art-opening"></div><div className="art-shadow"></div></div>
-    </section>
-    <section className="projects section-wrap">
-      <div className="section-heading"><p className="eyebrow">Selected work</p><h2>Projects</h2></div>
-      <ProjectGrid projects={projects} loading={loading} error={error} />
-      <Link className="text-link all-projects" to="/projects">View all projects <span>↗</span></Link>
-    </section>
-    <section className="about section-wrap">
-      <p className="eyebrow">A little about me</p>
-      <p className="about-copy">Architecture and interior design by <em>Nazanin Akbari</em>, shaped by people, place, and material.</p>
-      <Link className="text-link" to="/about">More about Nazanin <span>↗</span></Link>
-    </section>
+  const { projects } = useProjects(`*[_type == "project" && defined(slug.current) && defined(cover.asset)] | order(featured desc, year desc){_id, title, category, year, cover}`)
+  const [activeSlide, setActiveSlide] = useState(0)
+  const [activeCategory, setActiveCategory] = useState(null)
+  const [paused, setPaused] = useState(false)
+  const slides = projects.length
+    ? projects.map((project) => ({
+        title: project.title,
+        category: project.category,
+        year: project.year,
+        src: imageUrl(project.cover).width(2400).fit('crop').url(),
+      }))
+    : placeholderSlides
+  const slideIndex = activeSlide % slides.length
+  const currentSlide = slides[slideIndex]
+
+  useEffect(() => {
+    if (paused || slides.length < 2) return
+    const timer = window.setInterval(() => {
+      setActiveSlide((index) => (index + 1) % slides.length)
+    }, 6000)
+    return () => window.clearInterval(timer)
+  }, [paused, slides.length])
+
+  useEffect(() => {
+    const next = new Image()
+    next.src = slides[(slideIndex + 1) % slides.length].src
+  }, [slideIndex, slides.length])
+
+  function showCategory(category) {
+    setActiveCategory(category)
+    const projectIndex = projects.findIndex((project) => project.category === category)
+    const fallbackIndex = homeCategories.indexOf(category) % slides.length
+    setActiveSlide(projectIndex >= 0 ? projectIndex : fallbackIndex)
+  }
+
+  return <main id="top" className="home-hero">
+    <img className="home-hero__image" key={currentSlide.src} src={currentSlide.src} alt="" fetchPriority={slideIndex === 0 ? 'high' : 'auto'} />
+    <div className="home-hero__shade" aria-hidden="true" />
+    <div className="home-categories" aria-label="Project categories">
+      {homeCategories.map((category) => <button
+        type="button"
+        key={category}
+        className={activeCategory === category ? 'is-active' : ''}
+        onMouseEnter={() => showCategory(category)}
+        onMouseLeave={() => setActiveCategory(null)}
+        onFocus={() => showCategory(category)}
+        onClick={() => { showCategory(category); setPaused(true) }}
+      >{category}</button>)}
+    </div>
+    <div className="home-caption">
+      <p className="home-caption__eyebrow">{currentSlide.category || 'Architecture · Interiors'}{currentSlide.year ? ` · ${currentSlide.year}` : ''}</p>
+      <h1>{currentSlide.title || 'Spaces shaped by light and life.'}</h1>
+      {!projects.length && <p className="home-caption__note">Sample imagery · Replace with project photos in Sanity</p>}
+      <Link className="home-caption__link" to="/projects">Explore projects <span>↗</span></Link>
+    </div>
+    <div className="home-controls" aria-label="Slideshow controls">
+      <span className="home-controls__count">{String(slideIndex + 1).padStart(2, '0')} <i>/</i> {String(slides.length).padStart(2, '0')}</span>
+      <div className="home-controls__progress">
+        {slides.map((slide, index) => <button type="button" key={`${slide.src}-${index}`} aria-label={`Show slide ${index + 1}`} aria-current={index === slideIndex ? 'true' : undefined} onClick={() => { setActiveSlide(index); setPaused(true) }}><span /></button>)}
+      </div>
+      <button className="home-controls__pause" type="button" onClick={() => setPaused((value) => !value)} aria-label={paused ? 'Play slideshow' : 'Pause slideshow'}>{paused ? 'Play' : 'Pause'}</button>
+    </div>
   </main>
 }
 
