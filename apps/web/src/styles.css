@@ -102,7 +102,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .experience-nav,
 .experience-actions { display: flex; align-items: center; white-space: nowrap; }
 .experience-nav { justify-self: start; gap: clamp(9px, 1.2vw, 22px); }
-.experience-actions { justify-self: end; gap: clamp(12px, 1.6vw, 29px); }
+.experience-actions { grid-column: 3; justify-self: end; gap: clamp(12px, 1.6vw, 29px); }
 .experience-nav a,
 .experience-actions a {
   color: #fff;
