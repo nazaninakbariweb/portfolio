@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Link, Route, Routes, useLocation, useParams } from 'react-router-dom'
+import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { client, imageUrl } from './sanity.js'
 
 const projectFields = `
@@ -23,11 +23,11 @@ function useProjects(query, params = {}) {
 function SiteLayout() {
   const { pathname } = useLocation()
   return <>
-    <header className={`site-header${pathname === '/' ? ' site-header--overlay' : ''}`}>
+    {pathname === '/' ? <HomeHeader /> : <header className="site-header">
       <Link className="wordmark" to="/" aria-label="Nazanin Akbari home">NA<span>.</span></Link>
       <nav aria-label="Main navigation"><Link to="/projects">Projects</Link><Link to="/about">About</Link><Link to="/contact">Contact</Link></nav>
       <span className="header-note">Architecture · Interiors</span>
-    </header>
+    </header>}
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/projects" element={<ProjectsPage />} />
@@ -41,6 +41,43 @@ function SiteLayout() {
       <div className="footer-meta"><span>© Nazanin Akbari 2026</span><span>Architecture · Interiors</span><a href="#top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Back to top ↑</a></div>
     </footer>
   </>
+}
+
+function HomeHeader() {
+  const navigate = useNavigate()
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+
+  function submitSearch(event) {
+    event.preventDefault()
+    const term = searchTerm.trim()
+    navigate(term ? `/projects?q=${encodeURIComponent(term)}` : '/projects')
+  }
+
+  return <header className="experience-header">
+    <nav className="experience-nav" aria-label="Main navigation">
+      <Link to="/projects">WORKS</Link>
+      <Link to="/about">WORDS</Link>
+      <Link to="/projects">GALLERY</Link>
+      <Link to="/projects?category=Research">RESEARCH</Link>
+      <Link to="/contact">COLLABORATION</Link>
+      <Link to="/about">ABOUT</Link>
+    </nav>
+    <Link className="experience-brand" to="/" aria-label="Nazanin Akbari home">
+      <strong>NAZANIN AKBARI</strong><span>EXPERIENCE</span>
+    </Link>
+    <div className="experience-actions">
+      <Link to="/contact">CONTACT</Link>
+      <a href="https://nazanin-akbari-portfolio.sanity.studio/" target="_blank" rel="noreferrer">LOGIN</a>
+      <button type="button" aria-label={searchOpen ? 'Close search' : 'Search projects'} onClick={() => setSearchOpen((open) => !open)}>
+        {searchOpen ? <span className="search-close">×</span> : <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 5 5" /></svg>}
+      </button>
+    </div>
+    {searchOpen && <form className="experience-search" onSubmit={submitSearch}>
+      <input autoFocus value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} aria-label="Search projects" placeholder="Search projects" />
+      <button type="submit" aria-label="Submit search">↗</button>
+    </form>}
+  </header>
 }
 
 const placeholderSlides = [
@@ -66,13 +103,9 @@ const placeholderSlides = [
   },
 ]
 
-const homeCategories = ['Architecture', 'Interior', 'Installation', 'Research']
-
 function HomePage() {
   const { projects } = useProjects(`*[_type == "project" && defined(slug.current) && defined(cover.asset)] | order(featured desc, year desc){_id, title, category, year, cover}`)
   const [activeSlide, setActiveSlide] = useState(0)
-  const [activeCategory, setActiveCategory] = useState(null)
-  const [paused, setPaused] = useState(false)
   const slides = projects.length
     ? projects.map((project) => ({
         title: project.title,
@@ -85,64 +118,47 @@ function HomePage() {
   const currentSlide = slides[slideIndex]
 
   useEffect(() => {
-    if (paused || slides.length < 2) return
+    if (slides.length < 2) return
     const timer = window.setInterval(() => {
       setActiveSlide((index) => (index + 1) % slides.length)
     }, 6000)
     return () => window.clearInterval(timer)
-  }, [paused, slides.length])
+  }, [slides.length])
 
   useEffect(() => {
     const next = new Image()
     next.src = slides[(slideIndex + 1) % slides.length].src
   }, [slideIndex, slides.length])
 
-  function showCategory(category) {
-    setActiveCategory(category)
-    const projectIndex = projects.findIndex((project) => project.category === category)
-    const fallbackIndex = homeCategories.indexOf(category) % slides.length
-    setActiveSlide(projectIndex >= 0 ? projectIndex : fallbackIndex)
-  }
-
   return <main id="top" className="home-hero">
     <img className="home-hero__image" key={currentSlide.src} src={currentSlide.src} alt="" fetchPriority={slideIndex === 0 ? 'high' : 'auto'} />
     <div className="home-hero__shade" aria-hidden="true" />
-    <div className="home-categories" aria-label="Project categories">
-      {homeCategories.map((category) => <button
-        type="button"
-        key={category}
-        className={activeCategory === category ? 'is-active' : ''}
-        onMouseEnter={() => showCategory(category)}
-        onMouseLeave={() => setActiveCategory(null)}
-        onFocus={() => showCategory(category)}
-        onClick={() => { showCategory(category); setPaused(true) }}
-      >{category}</button>)}
-    </div>
-    <div className="home-caption">
-      <p className="home-caption__eyebrow">{currentSlide.category || 'Architecture · Interiors'}{currentSlide.year ? ` · ${currentSlide.year}` : ''}</p>
-      <h1>{currentSlide.title || 'Spaces shaped by light and life.'}</h1>
-      {!projects.length && <p className="home-caption__note">Sample imagery · Replace with project photos in Sanity</p>}
-      <Link className="home-caption__link" to="/projects">Explore projects <span>↗</span></Link>
-    </div>
-    <div className="home-controls" aria-label="Slideshow controls">
-      <span className="home-controls__count">{String(slideIndex + 1).padStart(2, '0')} <i>/</i> {String(slides.length).padStart(2, '0')}</span>
-      <div className="home-controls__progress">
-        {slides.map((slide, index) => <button type="button" key={`${slide.src}-${index}`} aria-label={`Show slide ${index + 1}`} aria-current={index === slideIndex ? 'true' : undefined} onClick={() => { setActiveSlide(index); setPaused(true) }}><span /></button>)}
-      </div>
-      <button className="home-controls__pause" type="button" onClick={() => setPaused((value) => !value)} aria-label={paused ? 'Play slideshow' : 'Pause slideshow'}>{paused ? 'Play' : 'Pause'}</button>
-    </div>
+    <section className="experience-message" aria-label="Welcome">
+      <h1><span>BEAUTY IS AN EXPERIENCE</span><span>ELEGANCE IS AN EMOTION</span></h1>
+      <p>NA</p>
+      <Link to="/projects" className="experience-scroll" aria-label="Scroll to projects"><span /></Link>
+    </section>
   </main>
 }
 
 function ProjectsPage() {
   const { projects, loading, error } = useProjects(`*[_type == "project" && defined(slug.current)] | order(year desc){${projectFields}}`)
-  return <main className="section-wrap page-main"><div className="section-heading"><p className="eyebrow">Selected work</p><h2>Projects</h2></div><ProjectGrid projects={projects} loading={loading} error={error} /></main>
+  const [searchParams] = useSearchParams()
+  const searchTerm = (searchParams.get('q') || '').trim().toLowerCase()
+  const category = searchParams.get('category')
+  const filteredProjects = projects.filter((project) => {
+    const matchesCategory = !category || project.category?.toLowerCase() === category.toLowerCase()
+    const searchable = [project.title, project.category, project.location, project.summary].filter(Boolean).join(' ').toLowerCase()
+    return matchesCategory && (!searchTerm || searchable.includes(searchTerm))
+  })
+  const emptyMessage = projects.length && (searchTerm || category) ? 'No projects match this selection.' : 'Projects will appear here soon.'
+  return <main className="section-wrap page-main"><div className="section-heading"><p className="eyebrow">Selected work</p><h2>Projects</h2></div><ProjectGrid projects={filteredProjects} loading={loading} error={error} emptyMessage={emptyMessage} /></main>
 }
 
-function ProjectGrid({ projects, loading, error }) {
+function ProjectGrid({ projects, loading, error, emptyMessage = 'Projects will appear here soon.' }) {
   if (loading) return <p className="status-message">Loading projects…</p>
   if (error) return <p className="status-message">Projects are temporarily unavailable. Please try again soon.</p>
-  if (!projects.length) return <p className="status-message">Projects will appear here soon.</p>
+  if (!projects.length) return <p className="status-message">{emptyMessage}</p>
   return <div className="project-grid">{projects.map((project) => <Link className="project-card" to={`/projects/${project.slug}`} key={project._id}>
     <div className="project-image">
       {project.cover?.url ? <img src={imageUrl(project.cover).width(900).height(1100).fit('crop').url()} alt={project.cover.alt || project.title} /> : <div className="image-placeholder" />}
