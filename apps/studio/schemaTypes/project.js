@@ -100,7 +100,7 @@ export const project = defineType({
   fields: [
     defineField({ name: 'title', title: 'Project title', type: 'string', group: 'details', validation: (rule) => rule.required() }),
     defineField({ name: 'slug', title: 'Web address', type: 'slug', group: 'details', options: { source: 'title', maxLength: 96 }, validation: (rule) => rule.required() }),
-    defineField({ name: 'category', title: 'Category', type: 'string', group: 'details', options: { list: ['Architecture', 'Interior', 'Installation', 'Research'] } }),
+    defineField({ name: 'category', title: 'Category', type: 'string', group: 'details', options: { list: ['Projects', 'Collaborations', 'Objects', 'Explorations'] } }),
     defineField({ name: 'year', title: 'Year', type: 'number', group: 'details', validation: (rule) => rule.integer().min(1900).max(2100) }),
     defineField({ name: 'location', title: 'Location', type: 'string', group: 'details' }),
     defineField({ name: 'summary', title: 'Short description', type: 'text', rows: 3, group: 'details' }),

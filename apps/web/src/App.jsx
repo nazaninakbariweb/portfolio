@@ -56,11 +56,11 @@ function HomeHeader() {
 
   return <header className="experience-header">
     <nav className="experience-nav" aria-label="Main navigation">
-      <Link to="/projects">WORKS</Link>
+      <Link to="/projects?category=Projects">WORKS</Link>
       <Link to="/about">WORDS</Link>
-      <Link to="/projects">GALLERY</Link>
-      <Link to="/projects?category=Research">RESEARCH</Link>
-      <Link to="/contact">COLLABORATION</Link>
+      <Link to="/projects?category=Projects">GALLERY</Link>
+      <Link to="/projects?category=Explorations">RESEARCH</Link>
+      <Link to="/projects?category=Collaborations">COLLABORATION</Link>
       <button type="button" aria-label={searchOpen ? 'Close search' : 'Search projects'} onClick={() => setSearchOpen((open) => !open)}>
         {searchOpen ? <span className="search-close">×</span> : <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 5 5" /></svg>}
       </button>
@@ -81,23 +81,23 @@ function HomeHeader() {
 
 const placeholderSlides = [
   {
-    title: 'Architecture',
-    category: 'Architecture',
+    title: 'Projects',
+    category: 'Projects',
     src: 'https://images.unsplash.com/photo-1704461539031-e7c2145e5fc4?auto=format&fit=crop&w=2400&q=85',
   },
   {
-    title: 'Material & light',
-    category: 'Interior',
+    title: 'Collaborations',
+    category: 'Collaborations',
     src: 'https://images.unsplash.com/photo-1707638121258-eb6241971802?auto=format&fit=crop&w=2400&q=85',
   },
   {
-    title: 'Spaces for living',
-    category: 'Research',
+    title: 'Objects',
+    category: 'Objects',
     src: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=2400&q=85',
   },
   {
-    title: 'Form & context',
-    category: 'Installation',
+    title: 'Explorations',
+    category: 'Explorations',
     src: 'https://images.unsplash.com/photo-1585674550411-3f7eed56b3e7?auto=format&fit=crop&w=2400&q=85',
   },
 ]
@@ -122,7 +122,7 @@ function HomePage() {
     : placeholderSlides
   const slideIndex = activeHeroImage % slides.length
   const currentSlide = slides[slideIndex]
-  const categories = ['Architecture', 'Interior', 'Installation', 'Research']
+  const categories = placeholderSlides.map(({ category }) => category)
 
   function moveToSlide(nextSlide) {
     const target = Math.max(0, Math.min(4, nextSlide))
