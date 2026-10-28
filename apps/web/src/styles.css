@@ -160,19 +160,11 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .home-experience {
   position: relative;
   width: 100%;
-  height: 100vh;
-  height: 100svh;
-  overflow: hidden;
-  overscroll-behavior: contain;
-  touch-action: pan-x;
   background: #171715;
 }
 .home-experience__track {
-  display: flex;
+  display: block;
   width: 100%;
-  flex-direction: column;
-  transition: transform 850ms cubic-bezier(.76, 0, .24, 1);
-  will-change: transform;
 }
 .home-hero {
   position: relative;
@@ -250,7 +242,6 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 }
 @media (prefers-reduced-motion: reduce) {
   .home-hero__image { animation: none; }
-  .home-experience__track { transition: none; }
   .home-category-slide span { transition: none; }
   .experience-nav a,
   .experience-actions a { transition: none; }

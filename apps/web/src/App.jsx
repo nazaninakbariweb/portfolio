@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { client, imageUrl } from './sanity.js'
 
@@ -104,13 +104,7 @@ const placeholderSlides = [
 function HomePage() {
   const navigate = useNavigate()
   const { projects } = useProjects(`*[_type == "project" && defined(slug.current) && defined(cover.asset)] | order(featured desc, year desc){_id, title, category, year, cover}`)
-  const [activeSlide, setActiveSlide] = useState(0)
   const [activeHeroImage, setActiveHeroImage] = useState(0)
-  const experienceRef = useRef(null)
-  const activeSlideRef = useRef(0)
-  const inputLocked = useRef(false)
-  const unlockTimer = useRef(null)
-  const touchStart = useRef(null)
   const slides = projects.length
     ? projects.map((project) => ({
         title: project.title,
@@ -122,58 +116,6 @@ function HomePage() {
   const slideIndex = activeHeroImage % slides.length
   const currentSlide = slides[slideIndex]
   const categories = placeholderSlides.map(({ category }) => category)
-
-  function moveToSlide(nextSlide) {
-    const target = Math.max(0, Math.min(4, nextSlide))
-    if (target === activeSlideRef.current) return
-    activeSlideRef.current = target
-    setActiveSlide(target)
-  }
-
-  function handleWheel(event) {
-    event.preventDefault()
-    if (inputLocked.current || Math.abs(event.deltaY) < 12) return
-    inputLocked.current = true
-    moveToSlide(activeSlideRef.current + (event.deltaY > 0 ? 1 : -1))
-    window.clearTimeout(unlockTimer.current)
-    unlockTimer.current = window.setTimeout(() => { inputLocked.current = false }, 850)
-  }
-
-  useEffect(() => {
-    const experience = experienceRef.current
-    if (!experience) return
-    experience.addEventListener('wheel', handleWheel, { passive: false })
-    return () => experience.removeEventListener('wheel', handleWheel)
-  }, [])
-
-  function handleTouchEnd(event) {
-    if (touchStart.current === null) return
-    const difference = touchStart.current - event.changedTouches[0].clientY
-    touchStart.current = null
-    if (Math.abs(difference) < 45 || inputLocked.current) return
-    inputLocked.current = true
-    moveToSlide(activeSlideRef.current + (difference > 0 ? 1 : -1))
-    window.clearTimeout(unlockTimer.current)
-    unlockTimer.current = window.setTimeout(() => { inputLocked.current = false }, 850)
-  }
-
-  useEffect(() => () => window.clearTimeout(unlockTimer.current), [])
-
-  useEffect(() => {
-    function handleKeyDown(event) {
-      if (event.target instanceof HTMLElement && ['INPUT', 'TEXTAREA'].includes(event.target.tagName)) return
-      const direction = ['ArrowDown', 'PageDown', ' '].includes(event.key) ? 1 : ['ArrowUp', 'PageUp'].includes(event.key) ? -1 : 0
-      if (!direction) return
-      event.preventDefault()
-      if (inputLocked.current) return
-      inputLocked.current = true
-      moveToSlide(activeSlideRef.current + direction)
-      window.clearTimeout(unlockTimer.current)
-      unlockTimer.current = window.setTimeout(() => { inputLocked.current = false }, 850)
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
 
   useEffect(() => {
     if (slides.length < 2) return
@@ -200,21 +142,18 @@ function HomePage() {
   return <main
     id="top"
     className="home-experience"
-    ref={experienceRef}
-    onTouchStart={(event) => { touchStart.current = event.touches[0].clientY }}
-    onTouchEnd={handleTouchEnd}
-    style={{ '--active-slide': activeSlide }}
   >
-    <div className="home-experience__track" style={{ transform: `translate3d(0, -${activeSlide * 100}svh, 0)` }}>
+    <div className="home-experience__track">
       <section className="home-hero" aria-label="Home">
         <img className="home-hero__image" key={currentSlide.src} src={currentSlide.src} alt="" fetchPriority={slideIndex === 0 ? 'high' : 'auto'} />
         <div className="home-hero__shade" aria-hidden="true" />
-        <button type="button" className="experience-scroll" aria-label="Next slide" onClick={() => moveToSlide(1)}>
+        <a className="experience-scroll" href="#category-projects" aria-label="Scroll to categories">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v15m-6-6 6 6 6-6" /></svg>
-        </button>
+        </a>
       </section>
       {categorySlides.map(({ category, image }) => <button
         key={category}
+        id={category === 'Projects' ? 'category-projects' : undefined}
         type="button"
         className="home-category-slide"
         style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.28)), url("${image}")` }}
