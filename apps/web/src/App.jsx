@@ -406,13 +406,29 @@ function ProjectsPage({ routeCategory }) {
     return matchesCategory && (!searchTerm || searchable.includes(searchTerm))
   })
   const pageTitle = category || 'Projects'
+  const sampleProjects = !searchTerm && !loading && !error
+    ? [
+        {
+          Projects: { title: 'Courtyard House', year: 2025, location: 'Architecture · Sample', image: placeholderSlides[0].src },
+          Collaborations: { title: 'Material Dialogues', year: 2025, location: 'Collaboration · Sample', image: placeholderSlides[1].src },
+        }[category],
+      ].filter(Boolean).map((sample) => ({
+        _id: `sample-${category.toLowerCase()}`,
+        title: sample.title,
+        category,
+        year: sample.year,
+        location: sample.location,
+        previewImage: sample.image,
+        isSample: true,
+      }))
+    : []
   const emptyMessage = projects.length && (searchTerm || category) ? 'No projects match this selection.' : 'Projects will appear here soon.'
   return <main id="top" className="category-page">
     <section className="category-page__hero" aria-label={`${pageTitle} category`}>
       <h1>{pageTitle}</h1>
     </section>
     <section className="category-page__work" aria-label={`${pageTitle} projects`}>
-      <ProjectGrid projects={filteredProjects} loading={loading} error={error} emptyMessage={emptyMessage} />
+      <ProjectGrid projects={[...filteredProjects, ...sampleProjects]} loading={loading} error={error} emptyMessage={emptyMessage} />
     </section>
   </main>
 }
@@ -421,13 +437,18 @@ function ProjectGrid({ projects, loading, error, emptyMessage = 'Projects will a
   if (loading) return <p className="status-message">Loading projects…</p>
   if (error) return <p className="status-message">Projects are temporarily unavailable. Please try again soon.</p>
   if (!projects.length) return <p className="status-message">{emptyMessage}</p>
-  return <div className="project-grid">{projects.map((project) => <Link className="project-card" to={`/projects/${project.slug}`} key={project._id}>
-    <div className="project-image">
-      {project.cover?.url ? <img src={imageUrl(project.cover).width(900).height(1100).fit('crop').url()} alt={project.cover.alt || project.title} /> : <div className="image-placeholder" />}
-      <span>{String(project.year || '').padStart(2, '0')}</span>
-    </div>
-    <div className="project-caption"><div><h3>{project.title}</h3><p>{[project.category, project.location, project.year].filter(Boolean).join(' · ')}</p></div><span aria-hidden="true">↗</span></div>
-  </Link>)}</div>
+  return <div className="project-grid">{projects.map((project) => {
+    const cardContent = <>
+      <div className="project-image">
+        {project.previewImage ? <img src={project.previewImage} alt={project.title} /> : project.cover?.url ? <img src={imageUrl(project.cover).width(900).height(1100).fit('crop').url()} alt={project.cover.alt || project.title} /> : <div className="image-placeholder" />}
+        <span>{project.isSample ? 'SAMPLE' : String(project.year || '').padStart(2, '0')}</span>
+      </div>
+      <div className="project-caption"><div><h3>{project.title}</h3><p>{[project.category, project.location, project.year].filter(Boolean).join(' · ')}</p></div>{!project.isSample && <span aria-hidden="true">↗</span>}</div>
+    </>
+    return project.isSample
+      ? <article className="project-card project-card--sample" key={project._id}>{cardContent}</article>
+      : <Link className="project-card" to={`/projects/${project.slug}`} key={project._id}>{cardContent}</Link>
+  })}</div>
 }
 
 function ProjectPage() {
