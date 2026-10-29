@@ -9,6 +9,10 @@ const categoryPaths = {
   Explorations: '/explorations',
 }
 
+const categoryFromPath = (path) => Object.entries(categoryPaths).find(([, categoryPath]) => path === categoryPath)?.[0]
+const categoryFromDetailPath = (path) => Object.entries(categoryPaths).find(([, categoryPath]) => path.startsWith(`${categoryPath}/`))?.[0]
+const projectPath = (project) => `${categoryPaths[project.category] || categoryPaths.Projects}/${project.slug}`
+
 const projectFields = `
   _id, title, "slug": slug.current, category, year, location, summary, featured,
   cover{..., "url": asset->url},
@@ -31,7 +35,7 @@ function SiteLayout() {
   const { pathname } = useLocation()
   const [hoveredCategory, setHoveredCategory] = useState(null)
   const isCategoryPage = Object.values(categoryPaths).includes(pathname)
-  const isProjectDetail = pathname.startsWith('/projects/')
+  const isProjectDetail = Boolean(categoryFromDetailPath(pathname))
   const isInfoPage = pathname === '/about' || pathname === '/contact'
   const hasHomeStyleHeader = pathname === '/' || isCategoryPage || isInfoPage || isProjectDetail
   useEffect(() => {
@@ -61,7 +65,7 @@ function SiteLayout() {
       <Route path="/collaborations" element={<ProjectsPage routeCategory="Collaborations" />} />
       <Route path="/objects" element={<ProjectsPage routeCategory="Objects" />} />
       <Route path="/explorations" element={<ProjectsPage routeCategory="Explorations" />} />
-      <Route path="/projects/:slug" element={<ProjectPage />} />
+      <Route path="/:category/:slug" element={<ProjectPage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="*" element={<NotFoundPage />} />
@@ -139,7 +143,7 @@ function HomeHeader({ onCategoryHover, alwaysLight = false, categoryPage = false
   const { pathname, search } = useLocation()
   const introIsActive = useIntroSlideActive()
   const selectedCategory = new URLSearchParams(search).get('category')
-  const pathCategory = Object.entries(categoryPaths).find(([, path]) => path === pathname)?.[0]
+  const pathCategory = categoryFromPath(pathname) || categoryFromDetailPath(pathname)
   const activeCategory = selectedCategory || pathCategory
 
   function returnHome() {
@@ -458,14 +462,15 @@ function ProjectGrid({ projects, loading, error, emptyMessage = 'Projects will a
       </div>
       <div className="project-caption"><div><h3>{project.title}</h3><p>{[project.category, project.location, project.year].filter(Boolean).join(' · ')}</p></div>{!project.isSample && <span aria-hidden="true">↗</span>}</div>
     </>
-    return <Link className={`project-card${project.isSample ? ' project-card--sample' : ''}`} to={`/projects/${project.slug}`} key={project._id}>{cardContent}</Link>
+    return <Link className={`project-card${project.isSample ? ' project-card--sample' : ''}`} to={projectPath(project)} key={project._id}>{cardContent}</Link>
   })}</div>
 }
 
 function ProjectPage() {
-  const { slug } = useParams()
-  const { projects, loading, error } = useProjects(`*[_type == "project" && slug.current == $slug][0]{${projectFields}}`, { slug })
-  const project = projects[0] || sampleProjects.find((sample) => sample.slug === slug)
+  const { category: categoryPath, slug } = useParams()
+  const category = categoryFromPath(`/${categoryPath}`)
+  const { projects, loading, error } = useProjects(`*[_type == "project" && slug.current == $slug && category == $category][0]{${projectFields}}`, { slug, category })
+  const project = projects[0] || sampleProjects.find((sample) => sample.slug === slug && sample.category === category)
   if (loading) return <main className="section-wrap page-main"><p className="status-message">Loading project…</p></main>
   if (error && !project) return <main className="section-wrap page-main"><p className="status-message">This project is temporarily unavailable. Please try again soon.</p></main>
   if (!project) return <main className="section-wrap page-main"><p className="status-message">Project not found.</p><Link className="text-link" to="/projects">Back to projects <span>↗</span></Link></main>
