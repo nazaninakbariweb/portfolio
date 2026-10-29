@@ -100,6 +100,18 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .story-text { padding: 28px 0; }
 .story-text h2 { font-size: 30px; margin-bottom: 16px; }
 .story-text p { white-space: pre-line; color: #696a64; font-size: 13px; line-height: 1.9; }
+.story-portable-text, .story-portable-heading, .story-portable-subheading, .story-portable-quote { grid-column: 1 / -1; width: min(100%, 1200px); margin: 0 auto; }
+.story-portable-text { color: #696a64; font: 400 14px/1.9 Helvetica, Arial, sans-serif; white-space: pre-line; }
+.story-portable-heading { font: 400 30px/1.25 'Playfair Display', serif; }
+.story-portable-subheading { font: 400 20px/1.4 Helvetica, Arial, sans-serif; }
+.story-portable-quote { border-left: 1px solid #c9c6bd; padding: 8px 20px; color: #696a64; font: 400 16px/1.8 'Playfair Display', serif; }
+.story-portable-image, .story-portable-video { grid-column: 1 / -1; justify-self: center; width: var(--image-width, min(92%, 1200px)); max-width: 1200px; margin: 8px auto 20px; }
+.story-portable-image img, .story-image-row img { display: block; width: 100%; height: auto; }
+.story-portable-image figcaption, .story-image-row figcaption, .story-portable-video figcaption { margin-top: 10px; color: #77776f; font-size: 10px; text-align: center; }
+.story-image-row { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 8px; width: 100%; margin: 8px auto 20px; }
+.story-image-row figure { min-width: 0; margin: 0; }
+.story-portable-video video { display: block; width: 100%; max-height: 78vh; object-fit: contain; background: #e9e6de; }
+.story-portable-text a { text-decoration: underline; text-underline-offset: 3px; }
 .story-media video { width: 100%; max-height: 80vh; background: #f4f2ed; }
 .drawing-link { display: inline-block; padding: 20px; border: 1px solid #d0cdc5; color: #696a64; font-size: 12px; }
 .site-footer { padding: 85px 12vw 24px; background: #e9e6de; }
@@ -161,6 +173,10 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   .story-block[style*="--block-span: 6"] { grid-column: span 1; }
   .story-text { grid-column: span 2 !important; }
   .story-text h2 { font-size: 24px; }
+  .story-portable-image, .story-portable-video { width: 100%; }
+  .story-image-row { flex-direction: column; }
+  .story-image-row figure { width: 100%; }
+  .story-portable-heading { font-size: 24px; }
   .home-footer { grid-template-columns: 1fr; gap: 48px; min-height: auto; padding: 70px 7vw 20px; }
   .home-footer__details { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 20px; }
   .home-footer__logo { font-size: clamp(22px, 6.3vw, 34px); }

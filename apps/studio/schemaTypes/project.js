@@ -1,93 +1,53 @@
 import { defineField, defineType } from 'sanity'
-import { ProjectCanvasInput } from './ProjectCanvasInput.jsx'
 
-const layoutFields = [
-  defineField({
-    name: 'width',
-    title: 'Desktop width (grid columns)',
-    type: 'number',
-    initialValue: 12,
-    validation: (rule) => rule.min(1).max(12).integer(),
-  }),
-  defineField({
-    name: 'offset',
-    title: 'Left offset (grid columns)',
-    type: 'number',
-    initialValue: 0,
-    validation: (rule) => rule.min(0).max(11).integer(),
-  }),
-  defineField({
-    name: 'mobileWidth',
-    title: 'Mobile width',
-    type: 'string',
-    initialValue: 'full',
-    options: {
-      layout: 'radio',
-      list: [
-        { title: 'Full width', value: 'full' },
-        { title: 'Half width', value: 'half' },
+const layoutImage = defineType({
+  name: 'layoutImage',
+  title: 'Single Image',
+  type: 'image',
+  options: { hotspot: true },
+  fields: [
+    defineField({
+      name: 'width',
+      title: 'Width (% of page, 20–100)',
+      type: 'number',
+      initialValue: 100,
+      validation: (rule) => rule.min(20).max(100),
+    }),
+    defineField({ name: 'caption', title: 'Caption (optional)', type: 'string' }),
+  ],
+})
+
+const imageRow = defineType({
+  name: 'imageRow',
+  title: 'Image Row (2–3 images side by side)',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'images',
+      title: 'Images',
+      type: 'array',
+      of: [
+        {
+          type: 'image',
+          options: { hotspot: true },
+          fields: [defineField({ name: 'caption', title: 'Caption (optional)', type: 'string' })],
+        },
       ],
-    },
-  }),
-]
-
-const layoutObject = defineType({
-  name: 'blockLayout',
-  title: 'Layout',
-  type: 'object',
-  fields: layoutFields,
-})
-
-const projectImage = defineType({
-  name: 'projectImage',
-  title: 'Image or render',
-  type: 'object',
-  fields: [
-    defineField({ name: 'image', title: 'Image', type: 'image', options: { hotspot: true }, validation: (rule) => rule.required() }),
-    defineField({ name: 'alt', title: 'Image description', type: 'string', validation: (rule) => rule.required() }),
-    defineField({ name: 'caption', title: 'Caption', type: 'string' }),
-    defineField({ name: 'layout', title: 'Layout', type: 'blockLayout', initialValue: { width: 12, offset: 0, mobileWidth: 'full' } }),
+      validation: (rule) => rule.min(2).max(3),
+    }),
   ],
-  preview: { select: { title: 'caption', media: 'image' }, prepare: ({ title, media }) => ({ title: title || 'Image or render', media }) },
+  preview: {
+    select: { images: 'images' },
+    prepare: ({ images }) => ({ title: `Image row (${images?.length || 0} images)` }),
+  },
 })
 
-const projectDrawing = defineType({
-  name: 'projectDrawing',
-  title: 'Plan, section, or diagram',
-  type: 'object',
-  fields: [
-    defineField({ name: 'title', title: 'Drawing title', type: 'string', validation: (rule) => rule.required() }),
-    defineField({ name: 'file', title: 'Drawing file or image', type: 'file' }),
-    defineField({ name: 'image', title: 'Drawing image', type: 'image', options: { hotspot: true } }),
-    defineField({ name: 'alt', title: 'Description', type: 'string' }),
-    defineField({ name: 'layout', title: 'Layout', type: 'blockLayout', initialValue: { width: 6, offset: 0, mobileWidth: 'full' } }),
-  ],
-  preview: { select: { title: 'title', media: 'image' } },
-})
-
-const projectVideo = defineType({
-  name: 'projectVideo',
+const layoutVideo = defineType({
+  name: 'layoutVideo',
   title: 'Video',
-  type: 'object',
-  fields: [
-    defineField({ name: 'title', title: 'Video title', type: 'string' }),
-    defineField({ name: 'url', title: 'Video URL', type: 'url' }),
-    defineField({ name: 'file', title: 'Video file', type: 'file', options: { accept: 'video/mp4,video/webm' } }),
-    defineField({ name: 'layout', title: 'Layout', type: 'blockLayout', initialValue: { width: 12, offset: 0, mobileWidth: 'full' } }),
-  ],
-  preview: { select: { title: 'title' }, prepare: ({ title }) => ({ title: title || 'Video' }) },
-})
-
-const projectText = defineType({
-  name: 'projectText',
-  title: 'Text',
-  type: 'object',
-  fields: [
-    defineField({ name: 'heading', title: 'Heading', type: 'string' }),
-    defineField({ name: 'body', title: 'Text', type: 'text', rows: 5, validation: (rule) => rule.required() }),
-    defineField({ name: 'layout', title: 'Layout', type: 'blockLayout', initialValue: { width: 6, offset: 0, mobileWidth: 'full' } }),
-  ],
-  preview: { select: { title: 'heading' }, prepare: ({ title }) => ({ title: title || 'Text' }) },
+  type: 'file',
+  options: { accept: 'video/*' },
+  fields: [defineField({ name: 'caption', title: 'Caption (optional)', type: 'string' })],
 })
 
 export const project = defineType({
@@ -99,7 +59,7 @@ export const project = defineType({
     { name: 'content', title: 'Project content' },
   ],
   fields: [
-    defineField({ name: 'title', title: 'Project title', description: 'The project URL is generated automatically from this title and its selected category.', type: 'string', group: 'details', validation: (rule) => rule.required() }),
+    defineField({ name: 'title', title: 'Project title', description: 'The project URL is generated from its category and title.', type: 'string', group: 'details', validation: (rule) => rule.required() }),
     defineField({ name: 'category', title: 'Category', type: 'string', group: 'details', options: { list: ['Projects', 'Collaborations', 'Objects', 'Explorations'] }, validation: (rule) => rule.required() }),
     defineField({ name: 'year', title: 'Year', type: 'number', group: 'details', validation: (rule) => rule.integer().min(1900).max(2100) }),
     defineField({ name: 'location', title: 'Location', type: 'string', group: 'details' }),
@@ -108,16 +68,16 @@ export const project = defineType({
     defineField({ name: 'cover', title: 'Cover image', type: 'image', options: { hotspot: true }, group: 'details' }),
     defineField({
       name: 'content',
-      title: 'Project canvas',
+      title: 'Project Page Content',
+      description: 'Add text, single images, image rows, and videos in order. Drag items to reorder them.',
       type: 'array',
       group: 'content',
       of: [
-        { type: 'projectImage' },
-        { type: 'projectDrawing' },
-        { type: 'projectVideo' },
-        { type: 'projectText' },
+        { type: 'block' },
+        { type: 'layoutImage' },
+        { type: 'imageRow' },
+        { type: 'layoutVideo' },
       ],
-      components: { input: ProjectCanvasInput },
       options: { sortable: true },
     }),
   ],
@@ -127,4 +87,4 @@ export const project = defineType({
   },
 })
 
-export const projectSchemaTypes = [layoutObject, projectImage, projectDrawing, projectVideo, projectText, project]
+export const projectSchemaTypes = [layoutImage, imageRow, layoutVideo, project]

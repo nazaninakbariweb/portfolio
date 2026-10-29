@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { PortableText } from '@portabletext/react'
 import { client, imageUrl } from './sanity.js'
 
 const categoryPaths = {
@@ -29,7 +30,12 @@ const projectPath = (project, siblings = []) => `${categoryPaths[project.categor
 const projectFields = `
   _id, title, category, year, location, summary, featured,
   cover{..., "url": asset->url},
-  content[]{..., "imageUrl": image.asset->url, "fileUrl": file.asset->url}
+  content[]{
+    ...,
+    _type == "layoutImage" => {"imageUrl": asset->url},
+    _type == "imageRow" => {"images": images[]{..., "imageUrl": asset->url}},
+    _type == "layoutVideo" => {"videoUrl": asset->url}
+  }
 `
 
 function useProjects(query, params = {}) {
@@ -493,7 +499,11 @@ function ProjectPage() {
       {project.summary && <p className="project-summary">{project.summary}</p>}
       {project.previewImage ? <img className="detail-cover" src={project.previewImage} alt={project.title} /> : project.cover?.url && <img className="detail-cover" src={imageUrl(project.cover).width(1800).url()} alt={project.cover.alt || project.title} />}
     </section>
-    <section className="story-grid">{(project.content || []).map((block) => <ContentBlock block={block} key={block._key} />)}</section>
+    <section className="story-grid">
+      {(project.content || []).some((block) => ['projectText', 'projectImage', 'projectDrawing', 'projectVideo'].includes(block?._type))
+        ? (project.content || []).map((block) => <ContentBlock block={block} key={block._key} />)
+        : project.content?.length > 0 && <PortableText value={project.content} components={projectContentComponents} />}
+    </section>
   </main>
 }
 
@@ -506,6 +516,69 @@ function ContentBlock({ block }) {
   if (block._type === 'projectDrawing') return <figure className="story-block story-media" style={style}>{block.imageUrl ? <img src={imageUrl(block.image).width(1600).url()} alt={block.alt || block.title || ''} /> : block.fileUrl ? <a className="drawing-link" href={block.fileUrl} target="_blank" rel="noreferrer">Open drawing: {block.title}</a> : null}{block.title && <figcaption>{block.title}</figcaption>}</figure>
   if (block._type === 'projectVideo') return <div className="story-block story-media" style={style}>{block.fileUrl ? <video controls preload="metadata" src={block.fileUrl}>{block.title}</video> : block.url ? <a className="drawing-link" href={block.url} target="_blank" rel="noreferrer">Watch video: {block.title || 'Open video'}</a> : null}</div>
   return null
+}
+
+function ProjectSingleImage({ value }) {
+  const src = value.imageUrl || imageUrl(value).width(1800).url()
+  const width = Math.min(100, Math.max(20, Number(value.width) || 100))
+  if (!src) return null
+  return <figure className="story-portable-image" style={{ '--image-width': `${Math.min(width, 92)}%` }}>
+    <img src={src} alt={value.caption || ''} loading="lazy" />
+    {value.caption && <figcaption>{value.caption}</figcaption>}
+  </figure>
+}
+
+function ProjectImageRow({ value }) {
+  const images = value.images || []
+  const [ratios, setRatios] = useState(images.map(() => 1))
+  useEffect(() => setRatios(images.map(() => 1)), [images.length])
+  if (!images.length) return null
+  return <div className="story-image-row">
+    {images.map((image, index) => {
+      const src = image.imageUrl || imageUrl(image).width(1600).url()
+      if (!src) return null
+      return <figure key={image._key || index} style={{ flex: `${ratios[index] || 1} 1 0` }}>
+        <img
+          src={src}
+          alt={image.caption || ''}
+          loading="lazy"
+          onLoad={(event) => {
+            const { naturalWidth, naturalHeight } = event.currentTarget
+            if (naturalWidth && naturalHeight) {
+              const ratio = naturalWidth / naturalHeight
+              setRatios((current) => current.map((item, itemIndex) => itemIndex === index ? ratio : item))
+            }
+          }}
+        />
+        {image.caption && <figcaption>{image.caption}</figcaption>}
+      </figure>
+    })}
+  </div>
+}
+
+function ProjectVideo({ value }) {
+  if (!value.videoUrl) return null
+  return <figure className="story-portable-video">
+    <video src={value.videoUrl} controls playsInline preload="metadata" />
+    {value.caption && <figcaption>{value.caption}</figcaption>}
+  </figure>
+}
+
+const projectContentComponents = {
+  block: {
+    normal: ({ children }) => <p className="story-portable-text">{children}</p>,
+    h2: ({ children }) => <h2 className="story-portable-heading">{children}</h2>,
+    h3: ({ children }) => <h3 className="story-portable-subheading">{children}</h3>,
+    blockquote: ({ children }) => <blockquote className="story-portable-quote">{children}</blockquote>,
+  },
+  marks: {
+    link: ({ children, value }) => <a href={value?.href} target="_blank" rel="noreferrer">{children}</a>,
+  },
+  types: {
+    layoutImage: ProjectSingleImage,
+    imageRow: ProjectImageRow,
+    layoutVideo: ProjectVideo,
+  },
 }
 
 function AboutPage() {
