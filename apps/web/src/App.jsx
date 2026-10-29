@@ -460,7 +460,7 @@ function ContentBlock({ block }) {
 }
 
 function AboutPage() {
-  return <main className="section-wrap page-main info-page"><p className="eyebrow">About</p><h1 className="page-title">Nazanin Akbari</h1><p className="about-copy">Architect and interior designer working across thoughtful spaces, material, and light.</p><p className="status-message">A fuller biography will be added here.</p></main>
+  return <main className="section-wrap page-main info-page"><p className="eyebrow">About</p><h1 className="page-title about-page__title">Nazanin Akbari</h1><p className="about-copy">Architect and interior designer working across thoughtful spaces, material, and light.</p><p className="status-message">A fuller biography will be added here.</p></main>
 }
 
 function ContactPage() {
