@@ -183,6 +183,87 @@ function HomePage() {
     image.src = next.src
   }, [slideIndex, slideSignature])
 
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const sections = [...document.querySelectorAll('.home-hero, .home-intro-slide, .home-category-slide')]
+    if (sections.length < 2) return
+
+    const nearestSectionIndex = () => sections.reduce((closest, section, index) => {
+      const distance = Math.abs(section.getBoundingClientRect().top)
+      return distance < closest.distance ? { index, distance } : closest
+    }, { index: 0, distance: Infinity }).index
+
+    let activeSection = nearestSectionIndex()
+    let previousY = window.scrollY
+    let animationFrame = null
+    let originalScrollBehavior = ''
+
+    function cancelAnimation() {
+      if (animationFrame === null) return
+      window.cancelAnimationFrame(animationFrame)
+      animationFrame = null
+      document.documentElement.style.scrollBehavior = originalScrollBehavior
+      activeSection = nearestSectionIndex()
+      previousY = window.scrollY
+    }
+
+    function animateTo(targetIndex) {
+      const startY = window.scrollY
+      const targetTop = sections[targetIndex].getBoundingClientRect().top + startY
+      const distance = targetTop - startY
+      const duration = 1350
+      const startTime = performance.now()
+      originalScrollBehavior = document.documentElement.style.scrollBehavior
+      document.documentElement.style.scrollBehavior = 'auto'
+      activeSection = targetIndex
+
+      function frame(now) {
+        const progress = Math.min(1, (now - startTime) / duration)
+        const eased = progress < .5
+          ? 16 * progress ** 5
+          : 1 - Math.pow(-2 * progress + 2, 5) / 2
+        window.scrollTo(0, startY + distance * eased)
+        if (progress < 1) {
+          animationFrame = window.requestAnimationFrame(frame)
+        } else {
+          window.scrollTo(0, targetTop)
+          animationFrame = null
+          document.documentElement.style.scrollBehavior = originalScrollBehavior
+          previousY = targetTop
+        }
+      }
+
+      animationFrame = window.requestAnimationFrame(frame)
+    }
+
+    function onScroll() {
+      const currentY = window.scrollY
+      const direction = Math.sign(currentY - previousY)
+      previousY = currentY
+      if (!direction || animationFrame !== null) return
+
+      const section = sections[activeSection]
+      const bounds = section.getBoundingClientRect()
+      const sectionTop = bounds.top + currentY
+      const threshold = Math.min(bounds.height, window.innerHeight) / 2
+      let nextSection = activeSection
+      if (direction > 0 && activeSection < sections.length - 1 && currentY >= sectionTop + threshold) nextSection += 1
+      if (direction < 0 && activeSection > 0 && currentY <= sectionTop - threshold) nextSection -= 1
+      if (nextSection !== activeSection) animateTo(nextSection)
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('wheel', cancelAnimation, { passive: true })
+    window.addEventListener('touchstart', cancelAnimation, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('wheel', cancelAnimation)
+      window.removeEventListener('touchstart', cancelAnimation)
+      if (animationFrame !== null) window.cancelAnimationFrame(animationFrame)
+      document.documentElement.style.scrollBehavior = originalScrollBehavior
+    }
+  }, [])
+
   const categorySlides = categories.map((category) => {
     const project = projects.find((item) => item.category?.toLowerCase() === category.toLowerCase())
     const fallback = placeholderSlides.find((item) => item.category === category)
