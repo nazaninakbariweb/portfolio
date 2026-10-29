@@ -42,11 +42,48 @@ function SiteLayout() {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
-    <footer className={`site-footer${pathname === '/' ? ' site-footer--hidden' : ''}`}>
+    {pathname === '/' ? <HomeFooter /> : <footer className="site-footer">
       <div><p className="eyebrow">Have a project in mind?</p><Link className="footer-title" to="/contact">Let’s talk <span>↗</span></Link></div>
       <div className="footer-meta"><span>© Nazanin Akbari 2026</span><span>Architecture · Interiors</span><a href="#top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Back to top ↑</a></div>
-    </footer>
+    </footer>}
   </>
+}
+
+function HomeFooter() {
+  function backToTop(event) {
+    event.preventDefault()
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  return <footer className="home-footer">
+    <div className="home-footer__brand">
+      <Link className="home-footer__logo" to="/" onClick={backToTop}>NAZANIN AKBARI</Link>
+      <p>Architecture · Interiors</p>
+    </div>
+    <div className="home-footer__details">
+      <div className="home-footer__column">
+        <h2>Contact</h2>
+        <p>For projects and collaborations</p>
+        <Link to="/contact">Get in touch <span>↗</span></Link>
+      </div>
+      <div className="home-footer__column">
+        <h2>Explore</h2>
+        <Link to="/about">About</Link>
+        <Link to="/projects">All projects</Link>
+      </div>
+      <div className="home-footer__column">
+        <h2>Follow</h2>
+        <a href="https://www.instagram.com/nazanin_akbary/" target="_blank" rel="noreferrer">Instagram</a>
+        <a href="https://t.me/Nazaninnakbary" target="_blank" rel="noreferrer">Telegram</a>
+        <a href="https://www.linkedin.com/in/nazanin-akbari-/" target="_blank" rel="noreferrer">LinkedIn</a>
+      </div>
+    </div>
+    <div className="home-footer__bottom">
+      <span>© 2026 Nazanin Akbari</span>
+      <span>Architecture · Interiors</span>
+      <a href="#top" onClick={backToTop}>Back to top ↑</a>
+    </div>
+  </footer>
 }
 
 function useIntroSlideActive() {
@@ -185,7 +222,7 @@ function HomePage() {
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const sections = [...document.querySelectorAll('.home-hero, .home-intro-slide, .home-category-slide')]
+    const sections = [...document.querySelectorAll('.home-hero, .home-intro-slide, .home-category-slide, .home-footer')]
     if (sections.length < 2) return
 
     const nearestSectionIndex = () => sections.reduce((closest, section, index) => {
