@@ -64,7 +64,9 @@ function SiteLayout() {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
-    {pathname === '/' ? <HomeFooter /> : <footer className="site-footer">
+    {pathname === '/' ? <HomeFooter /> : isCategoryPage ? <footer className="category-page__footer">
+      <span>© Nazanin Akbari</span>
+    </footer> : <footer className="site-footer">
       <div><p className="eyebrow">Have a project in mind?</p><Link className="footer-title" to="/contact">Let’s talk <span>↗</span></Link></div>
       <div className="footer-meta"><span>© Nazanin Akbari</span><span>Architecture · Interiors</span><a href="#top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Back to top ↑</a></div>
     </footer>}
