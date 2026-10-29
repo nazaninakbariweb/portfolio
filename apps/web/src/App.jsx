@@ -105,6 +105,7 @@ function HomePage() {
   const navigate = useNavigate()
   const { projects } = useProjects(`*[_type == "project" && defined(slug.current) && defined(cover.asset)] | order(featured desc, year desc){_id, title, category, year, cover}`)
   const [activeHeroImage, setActiveHeroImage] = useState(0)
+  const [activeSection, setActiveSection] = useState(0)
   const slides = projects.length
     ? projects.map((project) => ({
         title: project.title,
@@ -129,6 +130,42 @@ function HomePage() {
     const next = new Image()
     next.src = slides[(slideIndex + 1) % slides.length].src
   }, [slideIndex, slides.length])
+
+  useEffect(() => {
+    const sections = [...document.querySelectorAll('.home-experience__track > section, .home-experience__track > button')]
+    let frame = 0
+
+    function updateActiveSection() {
+      frame = 0
+      const viewportCenter = window.innerHeight / 2
+      let closestIndex = 0
+      let closestDistance = Infinity
+
+      sections.forEach((section, index) => {
+        const bounds = section.getBoundingClientRect()
+        const distance = Math.abs(bounds.top + bounds.height / 2 - viewportCenter)
+        if (distance < closestDistance) {
+          closestIndex = index
+          closestDistance = distance
+        }
+      })
+
+      setActiveSection((current) => current === closestIndex ? current : closestIndex)
+    }
+
+    function onScroll() {
+      if (!frame) frame = window.requestAnimationFrame(updateActiveSection)
+    }
+
+    updateActiveSection()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (frame) window.cancelAnimationFrame(frame)
+    }
+  }, [])
 
 
   const categorySlides = categories.map((category) => {
@@ -165,6 +202,15 @@ function HomePage() {
         aria-label={`Open ${category} projects`}
       ><span>{category}</span></button>)}
     </div>
+    <div
+      className="home-progress"
+      role="progressbar"
+      aria-label="Homepage section"
+      aria-valuemin={1}
+      aria-valuemax={6}
+      aria-valuenow={activeSection + 1}
+      style={{ '--progress-offset': `${activeSection * 15}px` }}
+    ><span /></div>
   </main>
 }
 
