@@ -269,24 +269,6 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   pointer-events: none;
   background: linear-gradient(180deg, rgba(0,0,0,.12) 0%, transparent 32%, rgba(0,0,0,.12) 58%, rgba(0,0,0,.4) 100%);
 }
-.experience-scroll {
-  position: absolute;
-  z-index: 3;
-  bottom: clamp(20px, 4vh, 40px);
-  left: clamp(20px, 2vw, 38px);
-  display: grid;
-  width: 24px;
-  height: 24px;
-  padding: 5px;
-  place-items: center;
-  border: 0;
-  background: transparent;
-  color: #fff;
-  cursor: pointer;
-  opacity: .9;
-}
-.experience-scroll svg { display: block; width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.35; stroke-linecap: round; stroke-linejoin: round; }
-.experience-scroll:hover { opacity: .55; }
 @keyframes home-image-reveal {
   from { opacity: .55; transform: scale(1.025); }
   to { opacity: 1; transform: scale(1); }
