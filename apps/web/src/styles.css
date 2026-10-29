@@ -6,6 +6,7 @@ html { scroll-behavior: smooth; }
 body { margin: 0; min-width: 320px; }
 a { color: inherit; text-decoration: none; }
 .site-header { height: 78px; padding: 0 6.2vw; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #dcdad3; }
+.site-header nav { font-family: Helvetica, Arial, sans-serif; font-weight: 400; }
 .wordmark { font-family: 'Playfair Display', serif; font-size: 26px; letter-spacing: -.08em; }
 .wordmark span, .text-link span, .project-caption > span, .footer-title span { color: #bd684b; }
 nav { display: flex; gap: 36px; font-size: 12px; }
@@ -106,8 +107,9 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .experience-nav a,
 .experience-actions a {
   color: #fff;
+  font-family: Helvetica, Arial, sans-serif;
   font-size: clamp(8px, .68vw, 11px);
-  font-weight: 600;
+  font-weight: 400;
   letter-spacing: .025em;
   transition: opacity 180ms ease;
 }
