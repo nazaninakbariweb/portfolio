@@ -192,8 +192,8 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 }
 .home-social-links > a {
   display: grid;
-  width: 14px;
-  height: 14px;
+  width: 17px;
+  height: 17px;
   place-items: center;
   color: inherit;
   opacity: .86;
@@ -202,8 +202,8 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .home-social-links > a:hover { opacity: .58; }
 .home-social-links svg {
   display: block;
-  width: 13px;
-  height: 13px;
+  width: 16px;
+  height: 16px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.05;
@@ -211,7 +211,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   stroke-linejoin: round;
 }
 .home-social-links__linkedin {
-  font: 400 11px/1 'DM Sans', sans-serif;
+  font: 400 13px/1 'DM Sans', sans-serif;
   letter-spacing: -.08em;
 }
 .home-experience {

@@ -2,6 +2,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { client, imageUrl } from './sanity.js'
 
+const categoryPaths = {
+  Projects: '/projects',
+  Collaborations: '/collaborations',
+  Objects: '/objects',
+  Explorations: '/explorations',
+}
+
 const projectFields = `
   _id, title, "slug": slug.current, category, year, location, summary, featured,
   cover{..., "url": asset->url},
@@ -24,8 +31,13 @@ function SiteLayout() {
   const { pathname } = useLocation()
   const [hoveredCategory, setHoveredCategory] = useState(null)
   useEffect(() => {
-    if (pathname === '/') window.scrollTo({ top: 0, behavior: 'smooth' })
-    else setHoveredCategory(null)
+    let frame
+    if (pathname === '/' && window.scrollY > 0) {
+      frame = window.requestAnimationFrame(() => window.dispatchEvent(new Event('portfolio:home-top')))
+    } else {
+      setHoveredCategory(null)
+    }
+    return () => { if (frame) window.cancelAnimationFrame(frame) }
   }, [pathname])
   return <>
     {pathname === '/' ? <>
@@ -38,7 +50,10 @@ function SiteLayout() {
     </header>}
     <Routes>
       <Route path="/" element={<HomePage hoveredCategory={hoveredCategory} />} />
-      <Route path="/projects" element={<ProjectsPage />} />
+      <Route path="/projects" element={<ProjectsPage routeCategory="Projects" />} />
+      <Route path="/collaborations" element={<ProjectsPage routeCategory="Collaborations" />} />
+      <Route path="/objects" element={<ProjectsPage routeCategory="Objects" />} />
+      <Route path="/explorations" element={<ProjectsPage routeCategory="Explorations" />} />
       <Route path="/projects/:slug" element={<ProjectPage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/contact" element={<ContactPage />} />
@@ -54,7 +69,7 @@ function SiteLayout() {
 function HomeFooter() {
   function backToTop(event) {
     event.preventDefault()
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.dispatchEvent(new Event('portfolio:home-top'))
   }
 
   return <footer className="home-footer">
@@ -121,15 +136,15 @@ function HomeHeader({ onCategoryHover }) {
   const activeCategory = selectedCategory || (pathname === '/projects' ? 'Projects' : null)
 
   function returnHome() {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.dispatchEvent(new Event('portfolio:home-top'))
   }
 
   return <header className={`experience-header${introIsActive ? ' experience-header--light' : ''}`}>
     <nav className="experience-nav" aria-label="Main navigation">
-      <Link className={activeCategory === 'Projects' ? 'is-active-category' : undefined} to="/projects?category=Projects" onMouseEnter={() => onCategoryHover('Projects')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Projects')} onBlur={() => onCategoryHover(null)}>PROJECTS</Link>
-      <Link className={activeCategory === 'Collaborations' ? 'is-active-category' : undefined} to="/projects?category=Collaborations" onMouseEnter={() => onCategoryHover('Collaborations')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Collaborations')} onBlur={() => onCategoryHover(null)}>COLLABORATIONS</Link>
-      <Link className={activeCategory === 'Objects' ? 'is-active-category' : undefined} to="/projects?category=Objects" onMouseEnter={() => onCategoryHover('Objects')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Objects')} onBlur={() => onCategoryHover(null)}>OBJECTS</Link>
-      <Link className={activeCategory === 'Explorations' ? 'is-active-category' : undefined} to="/projects?category=Explorations" onMouseEnter={() => onCategoryHover('Explorations')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Explorations')} onBlur={() => onCategoryHover(null)}>EXPLORATIONS</Link>
+      <Link className={activeCategory === 'Projects' ? 'is-active-category' : undefined} to={categoryPaths.Projects} onMouseEnter={() => onCategoryHover('Projects')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Projects')} onBlur={() => onCategoryHover(null)}>PROJECTS</Link>
+      <Link className={activeCategory === 'Collaborations' ? 'is-active-category' : undefined} to={categoryPaths.Collaborations} onMouseEnter={() => onCategoryHover('Collaborations')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Collaborations')} onBlur={() => onCategoryHover(null)}>COLLABORATIONS</Link>
+      <Link className={activeCategory === 'Objects' ? 'is-active-category' : undefined} to={categoryPaths.Objects} onMouseEnter={() => onCategoryHover('Objects')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Objects')} onBlur={() => onCategoryHover(null)}>OBJECTS</Link>
+      <Link className={activeCategory === 'Explorations' ? 'is-active-category' : undefined} to={categoryPaths.Explorations} onMouseEnter={() => onCategoryHover('Explorations')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Explorations')} onBlur={() => onCategoryHover(null)}>EXPLORATIONS</Link>
     </nav>
     <Link className="experience-brand" to="/" aria-label="Nazanin Akbari home" onClick={returnHome}>
       <strong>NAZANIN AKBARI</strong>
@@ -262,7 +277,7 @@ function HomePage({ hoveredCategory }) {
       const startY = window.scrollY
       const targetTop = sections[targetIndex].getBoundingClientRect().top + startY
       const distance = targetTop - startY
-      const duration = 1350
+      const duration = 1500
       const startTime = performance.now()
       originalScrollBehavior = document.documentElement.style.scrollBehavior
       document.documentElement.style.scrollBehavior = 'auto'
@@ -303,13 +318,30 @@ function HomePage({ hoveredCategory }) {
       if (nextSection !== activeSection) animateTo(nextSection)
     }
 
+    function onWheel(event) {
+      if (animationFrame !== null) event.preventDefault()
+    }
+
+    function onTouchMove(event) {
+      if (animationFrame !== null) event.preventDefault()
+    }
+
+    function onHomeTop() {
+      cancelAnimation()
+      animateTo(0)
+    }
+
     window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('wheel', cancelAnimation, { passive: true })
+    window.addEventListener('wheel', onWheel, { passive: false })
     window.addEventListener('touchstart', cancelAnimation, { passive: true })
+    window.addEventListener('touchmove', onTouchMove, { passive: false })
+    window.addEventListener('portfolio:home-top', onHomeTop)
     return () => {
       window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('wheel', cancelAnimation)
+      window.removeEventListener('wheel', onWheel)
       window.removeEventListener('touchstart', cancelAnimation)
+      window.removeEventListener('touchmove', onTouchMove)
+      window.removeEventListener('portfolio:home-top', onHomeTop)
       if (animationFrame !== null) window.cancelAnimationFrame(animationFrame)
       document.documentElement.style.scrollBehavior = originalScrollBehavior
     }
@@ -345,7 +377,7 @@ function HomePage({ hoveredCategory }) {
           type="button"
           className={`home-category-slide${video ? ' home-category-slide--video' : ''}`}
           style={video ? undefined : { backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.28)), url("${image}")` }}
-          onClick={() => navigate(`/projects?category=${encodeURIComponent(category)}`)}
+          onClick={() => navigate(categoryPaths[category] || '/projects')}
           aria-label={`Open ${category} projects`}
         >{video && <video className="home-category-slide__video" src={video} autoPlay muted loop playsInline preload="metadata" aria-hidden="true" />}<span>{category}</span></button>
         {index < categorySlides.length - 1 && <div className="home-slide-divider" aria-hidden="true" />}
@@ -354,11 +386,11 @@ function HomePage({ hoveredCategory }) {
   </main>
 }
 
-function ProjectsPage() {
+function ProjectsPage({ routeCategory }) {
   const { projects, loading, error } = useProjects(`*[_type == "project" && defined(slug.current)] | order(year desc){${projectFields}}`)
   const [searchParams] = useSearchParams()
   const searchTerm = (searchParams.get('q') || '').trim().toLowerCase()
-  const category = searchParams.get('category')
+  const category = searchParams.get('category') || routeCategory
   const filteredProjects = projects.filter((project) => {
     const matchesCategory = !category || project.category?.toLowerCase() === category.toLowerCase()
     const searchable = [project.title, project.category, project.location, project.summary].filter(Boolean).join(' ').toLowerCase()
