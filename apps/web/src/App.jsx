@@ -464,7 +464,7 @@ function AboutPage() {
 }
 
 function ContactPage() {
-  return <main className="section-wrap page-main info-page"><p className="eyebrow">Contact</p><h1 className="page-title">Let’s talk.</h1><p className="status-message">Contact details will be added here.</p></main>
+  return <main className="section-wrap page-main info-page"><p className="eyebrow">Contact</p><h1 className="page-title about-page__title">Let’s talk.</h1><p className="status-message">Contact details will be added here.</p></main>
 }
 
 function NotFoundPage() {
