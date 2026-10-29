@@ -11,10 +11,23 @@ const categoryPaths = {
 
 const categoryFromPath = (path) => Object.entries(categoryPaths).find(([, categoryPath]) => path === categoryPath)?.[0]
 const categoryFromDetailPath = (path) => Object.entries(categoryPaths).find(([, categoryPath]) => path.startsWith(`${categoryPath}/`))?.[0]
-const projectPath = (project) => `${categoryPaths[project.category] || categoryPaths.Projects}/${project.slug}`
+const projectTitleSlug = (title) => String(title || '')
+  .normalize('NFKD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase()
+  .trim()
+  .replace(/&/g, ' and ')
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-|-$/g, '')
+const projectUrlSlug = (project, siblings = []) => {
+  const base = projectTitleSlug(project.title) || project._id
+  const duplicates = siblings.filter((item) => item.category === project.category && projectTitleSlug(item.title) === base)
+  return duplicates.length > 1 ? `${base}-${String(project._id).slice(-6)}` : base
+}
+const projectPath = (project, siblings = []) => `${categoryPaths[project.category] || categoryPaths.Projects}/${projectUrlSlug(project, siblings)}`
 
 const projectFields = `
-  _id, title, "slug": slug.current, category, year, location, summary, featured,
+  _id, title, category, year, location, summary, featured,
   cover{..., "url": asset->url},
   content[]{..., "imageUrl": image.asset->url, "fileUrl": file.asset->url}
 `
@@ -194,7 +207,6 @@ const placeholderSlides = [
 const sampleProjects = [
   {
     _id: 'sample-projects',
-    slug: 'courtyard-house-sample',
     title: 'Courtyard House',
     category: 'Projects',
     year: 2025,
@@ -209,7 +221,6 @@ const sampleProjects = [
   },
   {
     _id: 'sample-collaborations',
-    slug: 'material-dialogues-sample',
     title: 'Material Dialogues',
     category: 'Collaborations',
     year: 2025,
@@ -226,7 +237,7 @@ const sampleProjects = [
 
 function HomePage({ hoveredCategory }) {
   const navigate = useNavigate()
-  const { projects } = useProjects(`*[_type == "project" && defined(slug.current) && defined(cover.asset)] | order(featured desc, year desc){_id, title, category, year, cover}`)
+  const { projects } = useProjects(`*[_type == "project" && defined(cover.asset)] | order(featured desc, year desc){_id, title, category, year, cover}`)
   const { projects: homepageDocuments } = useProjects(`*[_type == "homepageSettings" && _id == "homepageSettings"][0]{
     heroImages[]{..., "src": asset->url},
     heroVideos[]{"src": asset->url},
@@ -431,7 +442,7 @@ function HomePage({ hoveredCategory }) {
 }
 
 function ProjectsPage({ routeCategory }) {
-  const { projects, loading, error } = useProjects(`*[_type == "project" && defined(slug.current)] | order(year desc){${projectFields}}`)
+  const { projects, loading, error } = useProjects(`*[_type == "project"] | order(year desc){${projectFields}}`)
   const [searchParams] = useSearchParams()
   const searchTerm = (searchParams.get('q') || '').trim().toLowerCase()
   const category = searchParams.get('category') || routeCategory
@@ -462,15 +473,16 @@ function ProjectGrid({ projects, loading, error, emptyMessage = 'Projects will a
       </div>
       <div className="project-caption"><div><h3>{project.title}</h3><p>{[project.category, project.location, project.year].filter(Boolean).join(' · ')}</p></div>{!project.isSample && <span aria-hidden="true">↗</span>}</div>
     </>
-    return <Link className={`project-card${project.isSample ? ' project-card--sample' : ''}`} to={projectPath(project)} key={project._id}>{cardContent}</Link>
+    return <Link className={`project-card${project.isSample ? ' project-card--sample' : ''}`} to={projectPath(project, projects)} key={project._id}>{cardContent}</Link>
   })}</div>
 }
 
 function ProjectPage() {
   const { category: categoryPath, slug } = useParams()
   const category = categoryFromPath(`/${categoryPath}`)
-  const { projects, loading, error } = useProjects(`*[_type == "project" && slug.current == $slug && category == $category][0]{${projectFields}}`, { slug, category })
-  const project = projects[0] || sampleProjects.find((sample) => sample.slug === slug && sample.category === category)
+  const { projects, loading, error } = useProjects(`*[_type == "project" && category == $category]{${projectFields}}`, { category })
+  const projectCandidates = [...projects, ...sampleProjects.filter((sample) => sample.category === category)]
+  const project = projectCandidates.find((item) => projectUrlSlug(item, projectCandidates) === slug)
   if (loading) return <main className="section-wrap page-main"><p className="status-message">Loading project…</p></main>
   if (error && !project) return <main className="section-wrap page-main"><p className="status-message">This project is temporarily unavailable. Please try again soon.</p></main>
   if (!project) return <main className="section-wrap page-main"><p className="status-message">Project not found.</p><Link className="text-link" to="/projects">Back to projects <span>↗</span></Link></main>
