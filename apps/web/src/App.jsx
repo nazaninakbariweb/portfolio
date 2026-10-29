@@ -148,9 +148,12 @@ function HomePage() {
       <section className="home-hero" aria-label="Home">
         <img className="home-hero__image" key={currentSlide.src} src={currentSlide.src} alt="" fetchPriority={slideIndex === 0 ? 'high' : 'auto'} />
         <div className="home-hero__shade" aria-hidden="true" />
-        <a className="experience-scroll" href="#category-projects" aria-label="Scroll to categories">
+        <a className="experience-scroll" href="#home-intro" aria-label="Scroll to introduction">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v15m-6-6 6 6 6-6" /></svg>
         </a>
+      </section>
+      <section id="home-intro" className="home-intro-slide" aria-label="Introduction">
+        <p>YOUR TEXT HERE</p>
       </section>
       {categorySlides.map(({ category, image }) => <button
         key={category}
