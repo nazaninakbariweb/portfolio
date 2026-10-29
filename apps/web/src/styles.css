@@ -88,6 +88,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .page-main { min-height: 56vh; }
 .page-title { margin: 24px 0; font: 400 clamp(48px, 7vw, 90px)/1 'Playfair Display', serif; letter-spacing: -.05em; }
 .info-page .about-page__title { margin: 24px 0; font: 700 clamp(10px, 1.12vw, 18px)/1 'DM Sans', sans-serif; letter-spacing: -.035em; }
+.project-detail { min-height: 100vh; color: #252622; background: #f4f2ed; }
 .project-intro { padding-bottom: 42px; }
 .project-intro h1 { margin: 24px 0; font: 400 clamp(48px, 7vw, 90px)/1 'Playfair Display', serif; letter-spacing: -.05em; }
 .project-summary { max-width: 560px; color: #696a64; font-size: 14px; line-height: 1.8; }
