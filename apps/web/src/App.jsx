@@ -189,6 +189,39 @@ const placeholderSlides = [
   },
 ]
 
+const sampleProjects = [
+  {
+    _id: 'sample-projects',
+    slug: 'courtyard-house-sample',
+    title: 'Courtyard House',
+    category: 'Projects',
+    year: 2025,
+    location: 'Architecture · Sample',
+    summary: 'A sample project page showing how an architectural project can combine images, drawings, and written notes.',
+    previewImage: placeholderSlides[0].src,
+    isSample: true,
+    content: [
+      { _key: 'sample-intro', _type: 'projectText', heading: 'A house shaped around light', body: 'This temporary sample demonstrates the project detail layout. Replace this text with the project story in Sanity.' },
+      { _key: 'sample-image', _type: 'projectImage', previewImage: placeholderSlides[2].src, alt: 'Sample interior architecture image', caption: 'Sample image block' },
+    ],
+  },
+  {
+    _id: 'sample-collaborations',
+    slug: 'material-dialogues-sample',
+    title: 'Material Dialogues',
+    category: 'Collaborations',
+    year: 2025,
+    location: 'Collaboration · Sample',
+    summary: 'A sample collaboration page showing how images and project text appear together.',
+    previewImage: placeholderSlides[1].src,
+    isSample: true,
+    content: [
+      { _key: 'sample-intro', _type: 'projectText', heading: 'An exchange of ideas', body: 'This temporary sample demonstrates a collaborative project detail. Add the real story and media through Sanity later.' },
+      { _key: 'sample-image', _type: 'projectImage', previewImage: placeholderSlides[3].src, alt: 'Sample collaborative design image', caption: 'Sample image block' },
+    ],
+  },
+]
+
 function HomePage({ hoveredCategory }) {
   const navigate = useNavigate()
   const { projects } = useProjects(`*[_type == "project" && defined(slug.current) && defined(cover.asset)] | order(featured desc, year desc){_id, title, category, year, cover}`)
@@ -406,36 +439,18 @@ function ProjectsPage({ routeCategory }) {
     return matchesCategory && (!searchTerm || searchable.includes(searchTerm))
   })
   const pageTitle = category || 'Projects'
-  const sampleProjects = !searchTerm && !loading && !error
-    ? [
-        {
-          Projects: { title: 'Courtyard House', year: 2025, location: 'Architecture · Sample', image: placeholderSlides[0].src },
-          Collaborations: { title: 'Material Dialogues', year: 2025, location: 'Collaboration · Sample', image: placeholderSlides[1].src },
-        }[category],
-      ].filter(Boolean).map((sample) => ({
-        _id: `sample-${category.toLowerCase()}`,
-        title: sample.title,
-        category,
-        year: sample.year,
-        location: sample.location,
-        previewImage: sample.image,
-        isSample: true,
-      }))
-    : []
+  const categorySamples = searchTerm ? [] : sampleProjects.filter((sample) => sample.category === category)
   const emptyMessage = projects.length && (searchTerm || category) ? 'No projects match this selection.' : 'Projects will appear here soon.'
   return <main id="top" className="category-page">
-    <section className="category-page__hero" aria-label={`${pageTitle} category`}>
-      <h1>{pageTitle}</h1>
-    </section>
     <section className="category-page__work" aria-label={`${pageTitle} projects`}>
-      <ProjectGrid projects={[...filteredProjects, ...sampleProjects]} loading={loading} error={error} emptyMessage={emptyMessage} />
+      <ProjectGrid projects={[...filteredProjects, ...categorySamples]} loading={loading} error={error} emptyMessage={emptyMessage} />
     </section>
   </main>
 }
 
 function ProjectGrid({ projects, loading, error, emptyMessage = 'Projects will appear here soon.' }) {
   if (loading) return <p className="status-message">Loading projects…</p>
-  if (error) return <p className="status-message">Projects are temporarily unavailable. Please try again soon.</p>
+  if (error && !projects.length) return <p className="status-message">Projects are temporarily unavailable. Please try again soon.</p>
   if (!projects.length) return <p className="status-message">{emptyMessage}</p>
   return <div className="project-grid">{projects.map((project) => {
     const cardContent = <>
@@ -445,25 +460,23 @@ function ProjectGrid({ projects, loading, error, emptyMessage = 'Projects will a
       </div>
       <div className="project-caption"><div><h3>{project.title}</h3><p>{[project.category, project.location, project.year].filter(Boolean).join(' · ')}</p></div>{!project.isSample && <span aria-hidden="true">↗</span>}</div>
     </>
-    return project.isSample
-      ? <article className="project-card project-card--sample" key={project._id}>{cardContent}</article>
-      : <Link className="project-card" to={`/projects/${project.slug}`} key={project._id}>{cardContent}</Link>
+    return <Link className={`project-card${project.isSample ? ' project-card--sample' : ''}`} to={`/projects/${project.slug}`} key={project._id}>{cardContent}</Link>
   })}</div>
 }
 
 function ProjectPage() {
   const { slug } = useParams()
   const { projects, loading, error } = useProjects(`*[_type == "project" && slug.current == $slug][0]{${projectFields}}`, { slug })
-  const project = projects[0]
+  const project = projects[0] || sampleProjects.find((sample) => sample.slug === slug)
   if (loading) return <main className="section-wrap page-main"><p className="status-message">Loading project…</p></main>
-  if (error) return <main className="section-wrap page-main"><p className="status-message">This project is temporarily unavailable. Please try again soon.</p></main>
+  if (error && !project) return <main className="section-wrap page-main"><p className="status-message">This project is temporarily unavailable. Please try again soon.</p></main>
   if (!project) return <main className="section-wrap page-main"><p className="status-message">Project not found.</p><Link className="text-link" to="/projects">Back to projects <span>↗</span></Link></main>
   return <main className="project-detail page-main">
     <section className="project-intro section-wrap">
       <p className="eyebrow">{[project.category, project.year, project.location].filter(Boolean).join(' · ')}</p>
       <h1>{project.title}</h1>
       {project.summary && <p className="project-summary">{project.summary}</p>}
-      {project.cover?.url && <img className="detail-cover" src={imageUrl(project.cover).width(1800).url()} alt={project.cover.alt || project.title} />}
+      {project.previewImage ? <img className="detail-cover" src={project.previewImage} alt={project.title} /> : project.cover?.url && <img className="detail-cover" src={imageUrl(project.cover).width(1800).url()} alt={project.cover.alt || project.title} />}
     </section>
     <section className="story-grid">{(project.content || []).map((block) => <ContentBlock block={block} key={block._key} />)}</section>
   </main>
@@ -474,7 +487,7 @@ function ContentBlock({ block }) {
   const offset = Math.min(11, Math.max(0, Number(block.layout?.offset) || 0))
   const style = { '--block-span': width, '--block-start': offset + 1 }
   if (block._type === 'projectText') return <article className="story-block story-text" style={style}><div>{block.heading && <h2>{block.heading}</h2>}<p>{block.body}</p></div></article>
-  if (block._type === 'projectImage' && block.imageUrl) return <figure className="story-block story-media" style={style}><img src={imageUrl(block.image).width(1800).url()} alt={block.alt || ''} />{block.caption && <figcaption>{block.caption}</figcaption>}</figure>
+  if (block._type === 'projectImage' && (block.imageUrl || block.previewImage)) return <figure className="story-block story-media" style={style}><img src={block.previewImage || imageUrl(block.image).width(1800).url()} alt={block.alt || ''} />{block.caption && <figcaption>{block.caption}</figcaption>}</figure>
   if (block._type === 'projectDrawing') return <figure className="story-block story-media" style={style}>{block.imageUrl ? <img src={imageUrl(block.image).width(1600).url()} alt={block.alt || block.title || ''} /> : block.fileUrl ? <a className="drawing-link" href={block.fileUrl} target="_blank" rel="noreferrer">Open drawing: {block.title}</a> : null}{block.title && <figcaption>{block.title}</figcaption>}</figure>
   if (block._type === 'projectVideo') return <div className="story-block story-media" style={style}>{block.fileUrl ? <video controls preload="metadata" src={block.fileUrl}>{block.title}</video> : block.url ? <a className="drawing-link" href={block.url} target="_blank" rel="noreferrer">Watch video: {block.title || 'Open video'}</a> : null}</div>
   return null

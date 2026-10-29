@@ -72,7 +72,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 }
 .category-page__work {
   min-height: 42vh;
-  padding: clamp(48px, 8vh, 100px) 6vw 100px;
+  padding: 104px 6vw 100px;
   background: #f4f2ed;
 }
 .category-page__footer {
@@ -165,6 +165,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   .home-footer__logo { font-size: clamp(22px, 6.3vw, 34px); }
   .home-footer__bottom { flex-wrap: wrap; justify-content: flex-start; }
   .site-footer { padding: 70px 7vw 20px; }
+  .category-page__work { padding: 88px 7vw 70px; }
   .footer-meta { margin-top: 70px; flex-wrap: wrap; gap: 14px; }
 }
 
