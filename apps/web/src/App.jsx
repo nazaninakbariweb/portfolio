@@ -23,7 +23,10 @@ function useProjects(query, params = {}) {
 function SiteLayout() {
   const { pathname } = useLocation()
   return <>
-    {pathname === '/' ? <HomeHeader /> : <header className="site-header">
+    {pathname === '/' ? <>
+      <HomeHeader />
+      <HomeSocialLinks />
+    </> : <header className="site-header">
       <Link className="wordmark" to="/" aria-label="Nazanin Akbari home">NA<span>.</span></Link>
       <nav aria-label="Main navigation"><Link to="/projects">Projects</Link><Link to="/about">About</Link><Link to="/contact">Contact</Link></nav>
       <span className="header-note">Architecture · Interiors</span>
@@ -41,6 +44,18 @@ function SiteLayout() {
       <div className="footer-meta"><span>© Nazanin Akbari 2026</span><span>Architecture · Interiors</span><a href="#top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Back to top ↑</a></div>
     </footer>
   </>
+}
+
+function HomeSocialLinks() {
+  return <div className="home-social-links" aria-label="Social media">
+    <span role="img" aria-label="Instagram" title="Instagram">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" /><circle cx="12" cy="12" r="4" /><circle className="social-icon__fill" cx="17.6" cy="6.7" r="1" /></svg>
+    </span>
+    <span role="img" aria-label="WhatsApp" title="WhatsApp">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 11.7a8.2 8.2 0 0 1-12.1 7.2L3 20l1.2-4.9a8.2 8.2 0 1 1 16-3.4Z" /><path d="M8.4 8.2c.3-.6.6-.6 1-.6h.4c.2 0 .4.1.5.4l.7 1.7c.1.2.1.4-.1.6l-.5.6c-.2.2-.2.4 0 .6.5.9 1.3 1.6 2.3 2.1.2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.6.8c.3.1.4.3.4.5 0 .4-.2 1-.6 1.3-.4.4-1 .6-1.6.6-.5 0-1.2-.2-2-.5-1.2-.5-2.4-1.4-3.4-2.5-.8-.9-1.4-1.9-1.6-2.7-.2-.8-.1-1.4.2-1.9Z" /></svg>
+    </span>
+    <span className="home-social-links__linkedin" role="img" aria-label="LinkedIn" title="LinkedIn">in</span>
+  </div>
 }
 
 function HomeHeader() {

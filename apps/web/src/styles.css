@@ -157,6 +157,41 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 }
 .experience-search input::placeholder { color: rgba(255,255,255,.68); }
 .experience-search button { border: 0; background: transparent; color: #fff; font-size: 18px; cursor: pointer; }
+.home-social-links {
+  position: fixed;
+  z-index: 22;
+  top: 50%;
+  right: clamp(18px, 2vw, 38px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: rgba(255,255,255,.9);
+  transform: translateY(-50%);
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,.35));
+}
+.home-social-links > span {
+  display: grid;
+  width: 14px;
+  height: 14px;
+  place-items: center;
+  opacity: .86;
+}
+.home-social-links svg {
+  display: block;
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.home-social-links svg .social-icon__fill { fill: currentColor; stroke: none; }
+.home-social-links__linkedin {
+  font: 600 12px/1 'DM Sans', sans-serif;
+  letter-spacing: -.08em;
+}
 .home-experience {
   position: relative;
   width: 100%;
