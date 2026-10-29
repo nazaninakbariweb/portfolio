@@ -30,19 +30,24 @@ function useProjects(query, params = {}) {
 function SiteLayout() {
   const { pathname } = useLocation()
   const [hoveredCategory, setHoveredCategory] = useState(null)
+  const isCategoryPage = Object.values(categoryPaths).includes(pathname)
+  const hasHomeStyleHeader = pathname === '/' || isCategoryPage
   useEffect(() => {
     let frame
     if (pathname === '/' && window.scrollY > 0) {
       frame = window.requestAnimationFrame(() => window.dispatchEvent(new Event('portfolio:home-top')))
+    } else if (isCategoryPage) {
+      window.scrollTo(0, 0)
+      setHoveredCategory(null)
     } else {
       setHoveredCategory(null)
     }
     return () => { if (frame) window.cancelAnimationFrame(frame) }
-  }, [pathname])
+  }, [pathname, isCategoryPage])
   return <>
-    {pathname === '/' ? <>
-      <HomeHeader onCategoryHover={setHoveredCategory} />
-      <HomeSocialLinks />
+    {hasHomeStyleHeader ? <>
+      <HomeHeader onCategoryHover={setHoveredCategory} alwaysLight={isCategoryPage} />
+      {pathname === '/' && <HomeSocialLinks />}
     </> : <header className="site-header">
       <Link className="wordmark" to="/" aria-label="Nazanin Akbari home">NA<span>.</span></Link>
       <nav aria-label="Main navigation"><Link to="/projects" className={pathname.startsWith('/projects') ? 'is-active-category' : undefined}>Projects</Link><Link to="/about">About</Link><Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Home</Link><Link to="/contact">Contact</Link></nav>
@@ -129,17 +134,18 @@ function HomeSocialLinks() {
   </nav>
 }
 
-function HomeHeader({ onCategoryHover }) {
+function HomeHeader({ onCategoryHover, alwaysLight = false }) {
   const { pathname, search } = useLocation()
   const introIsActive = useIntroSlideActive()
   const selectedCategory = new URLSearchParams(search).get('category')
-  const activeCategory = selectedCategory || (pathname === '/projects' ? 'Projects' : null)
+  const pathCategory = Object.entries(categoryPaths).find(([, path]) => path === pathname)?.[0]
+  const activeCategory = selectedCategory || pathCategory
 
   function returnHome() {
     window.dispatchEvent(new Event('portfolio:home-top'))
   }
 
-  return <header className={`experience-header${introIsActive ? ' experience-header--light' : ''}`}>
+  return <header className={`experience-header${introIsActive || alwaysLight ? ' experience-header--light' : ''}`}>
     <nav className="experience-nav" aria-label="Main navigation">
       <Link className={activeCategory === 'Projects' ? 'is-active-category' : undefined} to={categoryPaths.Projects} onMouseEnter={() => onCategoryHover('Projects')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Projects')} onBlur={() => onCategoryHover(null)}>PROJECTS</Link>
       <Link className={activeCategory === 'Collaborations' ? 'is-active-category' : undefined} to={categoryPaths.Collaborations} onMouseEnter={() => onCategoryHover('Collaborations')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Collaborations')} onBlur={() => onCategoryHover(null)}>COLLABORATIONS</Link>
@@ -396,8 +402,16 @@ function ProjectsPage({ routeCategory }) {
     const searchable = [project.title, project.category, project.location, project.summary].filter(Boolean).join(' ').toLowerCase()
     return matchesCategory && (!searchTerm || searchable.includes(searchTerm))
   })
+  const pageTitle = category || 'Projects'
   const emptyMessage = projects.length && (searchTerm || category) ? 'No projects match this selection.' : 'Projects will appear here soon.'
-  return <main className="section-wrap page-main"><div className="section-heading"><p className="eyebrow">Selected work</p><h2 className={category ? 'category-title' : undefined}>{category || 'Projects'}</h2></div><ProjectGrid projects={filteredProjects} loading={loading} error={error} emptyMessage={emptyMessage} /></main>
+  return <main id="top" className="category-page">
+    <section className="category-page__hero" aria-label={`${pageTitle} category`}>
+      <h1>{pageTitle}</h1>
+    </section>
+    <section className="category-page__work" aria-label={`${pageTitle} projects`}>
+      <ProjectGrid projects={filteredProjects} loading={loading} error={error} emptyMessage={emptyMessage} />
+    </section>
+  </main>
 }
 
 function ProjectGrid({ projects, loading, error, emptyMessage = 'Projects will appear here soon.' }) {
