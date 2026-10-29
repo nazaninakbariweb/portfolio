@@ -31,23 +31,24 @@ function SiteLayout() {
   const { pathname } = useLocation()
   const [hoveredCategory, setHoveredCategory] = useState(null)
   const isCategoryPage = Object.values(categoryPaths).includes(pathname)
+  const isProjectDetail = pathname.startsWith('/projects/')
   const isInfoPage = pathname === '/about' || pathname === '/contact'
-  const hasHomeStyleHeader = pathname === '/' || isCategoryPage || isInfoPage
+  const hasHomeStyleHeader = pathname === '/' || isCategoryPage || isInfoPage || isProjectDetail
   useEffect(() => {
     let frame
     if (pathname === '/' && window.scrollY > 0) {
       frame = window.requestAnimationFrame(() => window.dispatchEvent(new Event('portfolio:home-top')))
-    } else if (isCategoryPage || isInfoPage) {
+    } else if (isCategoryPage || isInfoPage || isProjectDetail) {
       window.scrollTo(0, 0)
       setHoveredCategory(null)
     } else {
       setHoveredCategory(null)
     }
     return () => { if (frame) window.cancelAnimationFrame(frame) }
-  }, [pathname, isCategoryPage, isInfoPage])
+  }, [pathname, isCategoryPage, isInfoPage, isProjectDetail])
   return <>
     {hasHomeStyleHeader ? <>
-      <HomeHeader onCategoryHover={setHoveredCategory} alwaysLight={isCategoryPage || isInfoPage} categoryPage={isCategoryPage || isInfoPage} infoPage={isInfoPage} />
+      <HomeHeader onCategoryHover={setHoveredCategory} alwaysLight={isCategoryPage || isInfoPage || isProjectDetail} categoryPage={isCategoryPage || isInfoPage || isProjectDetail} infoPage={isInfoPage} />
       {pathname === '/' && <HomeSocialLinks />}
     </> : <header className="site-header">
       <Link className="wordmark" to="/" aria-label="Nazanin Akbari home">NA<span>.</span></Link>
@@ -68,7 +69,6 @@ function SiteLayout() {
     {pathname === '/' ? <HomeFooter /> : isCategoryPage || isInfoPage ? <footer className="category-page__footer">
       <span>© Nazanin Akbari</span>
     </footer> : <footer className="site-footer">
-      <div><p className="eyebrow">Have a project in mind?</p><Link className="footer-title" to="/contact">Let’s talk <span>↗</span></Link></div>
       <div className="footer-meta"><span>© Nazanin Akbari</span><span>Architecture · Interiors</span><a href="#top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Back to top ↑</a></div>
     </footer>}
   </>
