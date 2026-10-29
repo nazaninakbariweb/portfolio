@@ -257,11 +257,10 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .home-progress {
   position: fixed;
   z-index: 21;
-  top: 50%;
-  right: clamp(12px, 1.5vw, 24px);
+  right: clamp(18px, 2.1vw, 40px);
+  bottom: 20px;
   width: 1px;
-  height: 92px;
-  transform: translateY(-50%);
+  height: 64px;
   background: rgba(255,255,255,.28);
   pointer-events: none;
 }
@@ -270,7 +269,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   top: 0;
   left: 0;
   width: 2px;
-  height: 17px;
+  height: 10px;
   transform: translateY(var(--progress-offset));
   background: rgba(255,255,255,.92);
   transition: transform 260ms ease;

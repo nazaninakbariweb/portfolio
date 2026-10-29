@@ -209,7 +209,7 @@ function HomePage() {
       aria-valuemin={1}
       aria-valuemax={6}
       aria-valuenow={activeSection + 1}
-      style={{ '--progress-offset': `${activeSection * 15}px` }}
+      style={{ '--progress-offset': `${activeSection * 10.8}px` }}
     ><span /></div>
   </main>
 }
