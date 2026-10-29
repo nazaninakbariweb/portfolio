@@ -246,8 +246,8 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .home-category-slide span {
   position: relative;
   z-index: 1;
-  font: 500 clamp(30px, 5vw, 76px)/1 'DM Sans', sans-serif;
-  letter-spacing: -.045em;
+  font: 400 clamp(10px, 1.12vw, 18px)/1 Helvetica, Arial, sans-serif;
+  letter-spacing: -.035em;
   text-transform: uppercase;
   text-shadow: 0 2px 20px rgba(0,0,0,.3);
   transition: letter-spacing 250ms ease, opacity 250ms ease;
@@ -303,12 +303,14 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   .experience-nav a { font-size: 8px; }
   .experience-nav a:nth-child(n+4) { display: none; }
   .experience-brand { font-size: 9px; }
+  .home-category-slide span { font-size: 9px; }
   .experience-actions { gap: 10px; }
   .experience-actions a { font-size: 8px; }
 }
 @media (max-width: 430px) {
   .experience-nav a:nth-child(n+3) { display: none; }
   .experience-brand { font-size: 8px; }
+  .home-category-slide span { font-size: 8px; }
   .experience-actions { gap: 7px; }
   .experience-actions a { font-size: 7px; }
 }
