@@ -194,15 +194,17 @@ function HomePage() {
       <section id="home-intro" className="home-intro-slide" aria-label="Introduction">
         <p>YOUR TEXT HERE</p>
       </section>
-      {categorySlides.map(({ category, image, video }) => <button
-        key={category}
-        id={category === 'Projects' ? 'category-projects' : undefined}
-        type="button"
-        className={`home-category-slide${video ? ' home-category-slide--video' : ''}`}
-        style={video ? undefined : { backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.28)), url("${image}")` }}
-        onClick={() => navigate(`/projects?category=${encodeURIComponent(category)}`)}
-        aria-label={`Open ${category} projects`}
-      >{video && <video className="home-category-slide__video" src={video} autoPlay muted loop playsInline preload="metadata" aria-hidden="true" />}<span>{category}</span></button>)}
+      {categorySlides.map(({ category, image, video }, index) => <div className="home-category-group" key={category}>
+        <button
+          id={category === 'Projects' ? 'category-projects' : undefined}
+          type="button"
+          className={`home-category-slide${video ? ' home-category-slide--video' : ''}`}
+          style={video ? undefined : { backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.28)), url("${image}")` }}
+          onClick={() => navigate(`/projects?category=${encodeURIComponent(category)}`)}
+          aria-label={`Open ${category} projects`}
+        >{video && <video className="home-category-slide__video" src={video} autoPlay muted loop playsInline preload="metadata" aria-hidden="true" />}<span>{category}</span></button>
+        {index < categorySlides.length - 1 && <div className="home-slide-divider" aria-hidden="true" />}
+      </div>)}
     </div>
   </main>
 }
