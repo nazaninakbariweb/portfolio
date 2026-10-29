@@ -22,12 +22,14 @@ function useProjects(query, params = {}) {
 
 function SiteLayout() {
   const { pathname } = useLocation()
+  const [hoveredCategory, setHoveredCategory] = useState(null)
   useEffect(() => {
     if (pathname === '/') window.scrollTo({ top: 0, behavior: 'smooth' })
+    else setHoveredCategory(null)
   }, [pathname])
   return <>
     {pathname === '/' ? <>
-      <HomeHeader />
+      <HomeHeader onCategoryHover={setHoveredCategory} />
       <HomeSocialLinks />
     </> : <header className="site-header">
       <Link className="wordmark" to="/" aria-label="Nazanin Akbari home">NA<span>.</span></Link>
@@ -35,7 +37,7 @@ function SiteLayout() {
       <span className="header-note">Architecture · Interiors</span>
     </header>}
     <Routes>
-      <Route path="/" element={<HomePage />} />
+      <Route path="/" element={<HomePage hoveredCategory={hoveredCategory} />} />
       <Route path="/projects" element={<ProjectsPage />} />
       <Route path="/projects/:slug" element={<ProjectPage />} />
       <Route path="/about" element={<AboutPage />} />
@@ -113,7 +115,7 @@ function HomeSocialLinks() {
   </nav>
 }
 
-function HomeHeader() {
+function HomeHeader({ onCategoryHover }) {
   const { pathname, search } = useLocation()
   const introIsActive = useIntroSlideActive()
   const selectedCategory = new URLSearchParams(search).get('category')
@@ -125,10 +127,10 @@ function HomeHeader() {
 
   return <header className={`experience-header${introIsActive ? ' experience-header--light' : ''}`}>
     <nav className="experience-nav" aria-label="Main navigation">
-      <Link className={activeCategory === 'Projects' ? 'is-active-category' : undefined} to="/projects?category=Projects">PROJECTS</Link>
-      <Link className={activeCategory === 'Collaborations' ? 'is-active-category' : undefined} to="/projects?category=Collaborations">COLLABORATIONS</Link>
-      <Link className={activeCategory === 'Objects' ? 'is-active-category' : undefined} to="/projects?category=Objects">OBJECTS</Link>
-      <Link className={activeCategory === 'Explorations' ? 'is-active-category' : undefined} to="/projects?category=Explorations">EXPLORATIONS</Link>
+      <Link className={activeCategory === 'Projects' ? 'is-active-category' : undefined} to="/projects?category=Projects" onMouseEnter={() => onCategoryHover('Projects')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Projects')} onBlur={() => onCategoryHover(null)}>PROJECTS</Link>
+      <Link className={activeCategory === 'Collaborations' ? 'is-active-category' : undefined} to="/projects?category=Collaborations" onMouseEnter={() => onCategoryHover('Collaborations')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Collaborations')} onBlur={() => onCategoryHover(null)}>COLLABORATIONS</Link>
+      <Link className={activeCategory === 'Objects' ? 'is-active-category' : undefined} to="/projects?category=Objects" onMouseEnter={() => onCategoryHover('Objects')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Objects')} onBlur={() => onCategoryHover(null)}>OBJECTS</Link>
+      <Link className={activeCategory === 'Explorations' ? 'is-active-category' : undefined} to="/projects?category=Explorations" onMouseEnter={() => onCategoryHover('Explorations')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Explorations')} onBlur={() => onCategoryHover(null)}>EXPLORATIONS</Link>
     </nav>
     <Link className="experience-brand" to="/" aria-label="Nazanin Akbari home" onClick={returnHome}>
       <strong>NAZANIN AKBARI</strong>
@@ -164,7 +166,7 @@ const placeholderSlides = [
   },
 ]
 
-function HomePage() {
+function HomePage({ hoveredCategory }) {
   const navigate = useNavigate()
   const { projects } = useProjects(`*[_type == "project" && defined(slug.current) && defined(cover.asset)] | order(featured desc, year desc){_id, title, category, year, cover}`)
   const { projects: homepageDocuments } = useProjects(`*[_type == "homepageSettings" && _id == "homepageSettings"][0]{
@@ -202,7 +204,20 @@ function HomePage() {
   }, [slideSignature])
   const slideIndex = activeHeroImage % randomizedSlides.length
   const currentSlide = randomizedSlides[slideIndex]
+  const [hoveredHeroSlide, setHoveredHeroSlide] = useState(null)
+  const displayedSlide = hoveredHeroSlide || currentSlide
   const categories = placeholderSlides.map(({ category }) => category)
+
+  useEffect(() => {
+    if (!hoveredCategory) {
+      setHoveredHeroSlide(null)
+      return
+    }
+    const categoryProjects = projects.filter((project) => project.category?.toLowerCase() === hoveredCategory.toLowerCase() && project.cover?.asset)
+    const randomProject = categoryProjects[Math.floor(Math.random() * categoryProjects.length)]
+    const fallback = placeholderSlides.find((slide) => slide.category === hoveredCategory)
+    setHoveredHeroSlide({ type: 'image', src: randomProject ? imageUrl(randomProject.cover).width(2400).fit('crop').url() : fallback?.src })
+  }, [hoveredCategory, projects])
 
   useEffect(() => {
     setActiveHeroImage(0)
@@ -317,9 +332,9 @@ function HomePage() {
   >
     <div className="home-experience__track">
       <section className="home-hero" aria-label="Home">
-        {currentSlide.type === 'video'
-          ? <video className="home-hero__image" key={currentSlide.src} src={currentSlide.src} autoPlay muted playsInline preload="auto" aria-hidden="true" />
-          : <img className="home-hero__image" key={currentSlide.src} src={currentSlide.src} alt="" fetchPriority={slideIndex === 0 ? 'high' : 'auto'} />}
+        {displayedSlide.type === 'video'
+          ? <video className="home-hero__image" key={displayedSlide.src} src={displayedSlide.src} autoPlay muted playsInline preload="auto" aria-hidden="true" />
+          : <img className="home-hero__image" key={displayedSlide.src} src={displayedSlide.src} alt="" fetchPriority={slideIndex === 0 ? 'high' : 'auto'} />}
         <div className="home-hero__shade" aria-hidden="true" />
       </section>
       <section id="home-intro" className="home-intro-slide" aria-label="Introduction">
