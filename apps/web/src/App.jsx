@@ -106,6 +106,11 @@ function HomePage() {
   const { projects } = useProjects(`*[_type == "project" && defined(slug.current) && defined(cover.asset)] | order(featured desc, year desc){_id, title, category, year, cover}`)
   const [activeHeroImage, setActiveHeroImage] = useState(0)
   const [activeSection, setActiveSection] = useState(0)
+
+  useEffect(() => {
+    document.documentElement.classList.add('home-scrollbar-hidden')
+    return () => document.documentElement.classList.remove('home-scrollbar-hidden')
+  }, [])
   const slides = projects.length
     ? projects.map((project) => ({
         title: project.title,
