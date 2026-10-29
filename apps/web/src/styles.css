@@ -84,12 +84,6 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 }
 
 /* Full-screen photographic home page based on the supplied reference. */
-html.home-scrollbar-hidden {
-  scrollbar-width: none;
-}
-html.home-scrollbar-hidden::-webkit-scrollbar {
-  display: none;
-}
 .site-footer--hidden { display: none; }
 .experience-header {
   position: fixed;
@@ -260,26 +254,6 @@ html.home-scrollbar-hidden::-webkit-scrollbar {
 }
 .experience-scroll svg { display: block; width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.35; stroke-linecap: round; stroke-linejoin: round; }
 .experience-scroll:hover { opacity: .55; }
-.home-progress {
-  position: fixed;
-  z-index: 21;
-  right: clamp(18px, 2.1vw, 40px);
-  bottom: 20px;
-  width: 1px;
-  height: 64px;
-  background: rgba(255,255,255,.28);
-  pointer-events: none;
-}
-.home-progress span {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 2px;
-  height: 10px;
-  transform: translateY(var(--progress-offset));
-  background: rgba(255,255,255,.92);
-  transition: transform 260ms ease;
-}
 @keyframes home-image-reveal {
   from { opacity: .55; transform: scale(1.025); }
   to { opacity: 1; transform: scale(1); }
