@@ -49,8 +49,23 @@ function SiteLayout() {
   </>
 }
 
+function useIntroSlideActive() {
+  const [isActive, setIsActive] = useState(false)
+
+  useEffect(() => {
+    const intro = document.getElementById('home-intro')
+    if (!intro || !('IntersectionObserver' in window)) return
+    const observer = new IntersectionObserver(([entry]) => setIsActive(entry.isIntersecting), { threshold: 0.55 })
+    observer.observe(intro)
+    return () => observer.disconnect()
+  }, [])
+
+  return isActive
+}
+
 function HomeSocialLinks() {
-  return <nav className="home-social-links" aria-label="Social media">
+  const introIsActive = useIntroSlideActive()
+  return <nav className={`home-social-links${introIsActive ? ' home-social-links--light' : ''}`} aria-label="Social media">
     <a href="https://www.instagram.com/nazanin_akbary/" target="_blank" rel="noreferrer" aria-label="Instagram" title="Instagram">
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.6" cy="6.7" r=".8" /></svg>
     </a>
@@ -63,6 +78,7 @@ function HomeSocialLinks() {
 
 function HomeHeader() {
   const { pathname, search } = useLocation()
+  const introIsActive = useIntroSlideActive()
   const selectedCategory = new URLSearchParams(search).get('category')
   const activeCategory = selectedCategory || (pathname === '/projects' ? 'Projects' : null)
 
@@ -70,7 +86,7 @@ function HomeHeader() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  return <header className="experience-header">
+  return <header className={`experience-header${introIsActive ? ' experience-header--light' : ''}`}>
     <nav className="experience-nav" aria-label="Main navigation">
       <Link className={activeCategory === 'Projects' ? 'is-active-category' : undefined} to="/projects?category=Projects">PROJECTS</Link>
       <Link className={activeCategory === 'Collaborations' ? 'is-active-category' : undefined} to="/projects?category=Collaborations">COLLABORATIONS</Link>
