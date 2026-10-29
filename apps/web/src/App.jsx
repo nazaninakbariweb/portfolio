@@ -32,22 +32,22 @@ function SiteLayout() {
   const [hoveredCategory, setHoveredCategory] = useState(null)
   const isCategoryPage = Object.values(categoryPaths).includes(pathname)
   const isInfoPage = pathname === '/about' || pathname === '/contact'
-  const hasHomeStyleHeader = pathname === '/' || isCategoryPage
+  const hasHomeStyleHeader = pathname === '/' || isCategoryPage || isInfoPage
   useEffect(() => {
     let frame
     if (pathname === '/' && window.scrollY > 0) {
       frame = window.requestAnimationFrame(() => window.dispatchEvent(new Event('portfolio:home-top')))
-    } else if (isCategoryPage) {
+    } else if (isCategoryPage || isInfoPage) {
       window.scrollTo(0, 0)
       setHoveredCategory(null)
     } else {
       setHoveredCategory(null)
     }
     return () => { if (frame) window.cancelAnimationFrame(frame) }
-  }, [pathname, isCategoryPage])
+  }, [pathname, isCategoryPage, isInfoPage])
   return <>
     {hasHomeStyleHeader ? <>
-      <HomeHeader onCategoryHover={setHoveredCategory} alwaysLight={isCategoryPage} categoryPage={isCategoryPage} />
+      <HomeHeader onCategoryHover={setHoveredCategory} alwaysLight={isCategoryPage || isInfoPage} categoryPage={isCategoryPage || isInfoPage} infoPage={isInfoPage} />
       {pathname === '/' && <HomeSocialLinks />}
     </> : <header className="site-header">
       <Link className="wordmark" to="/" aria-label="Nazanin Akbari home">NA<span>.</span></Link>
@@ -137,7 +137,7 @@ function HomeSocialLinks() {
   </nav>
 }
 
-function HomeHeader({ onCategoryHover, alwaysLight = false, categoryPage = false }) {
+function HomeHeader({ onCategoryHover, alwaysLight = false, categoryPage = false, infoPage = false }) {
   const { pathname, search } = useLocation()
   const introIsActive = useIntroSlideActive()
   const selectedCategory = new URLSearchParams(search).get('category')
@@ -148,7 +148,7 @@ function HomeHeader({ onCategoryHover, alwaysLight = false, categoryPage = false
     window.dispatchEvent(new Event('portfolio:home-top'))
   }
 
-  return <header className={`experience-header${introIsActive || alwaysLight ? ' experience-header--light' : ''}${categoryPage ? ' experience-header--category' : ''}`}>
+  return <header className={`experience-header${introIsActive || alwaysLight ? ' experience-header--light' : ''}${categoryPage ? ' experience-header--category' : ''}${infoPage ? ' experience-header--info' : ''}`}>
     <nav className="experience-nav" aria-label="Main navigation">
       <Link className={activeCategory === 'Projects' ? 'is-active-category' : undefined} to={categoryPaths.Projects} onMouseEnter={() => onCategoryHover('Projects')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Projects')} onBlur={() => onCategoryHover(null)}>PROJECTS</Link>
       <Link className={activeCategory === 'Collaborations' ? 'is-active-category' : undefined} to={categoryPaths.Collaborations} onMouseEnter={() => onCategoryHover('Collaborations')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Collaborations')} onBlur={() => onCategoryHover(null)}>COLLABORATIONS</Link>
