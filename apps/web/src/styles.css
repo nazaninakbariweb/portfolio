@@ -204,6 +204,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   transform: translateX(-50%);
 }
 .experience-brand strong { font-weight: 700; }
+.experience-header--category .experience-brand { display: none; }
 .experience-header--light { color: #252622; text-shadow: none; }
 .experience-header--light .experience-nav a,
 .experience-header--light .experience-actions a,

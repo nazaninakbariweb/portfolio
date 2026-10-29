@@ -46,7 +46,7 @@ function SiteLayout() {
   }, [pathname, isCategoryPage])
   return <>
     {hasHomeStyleHeader ? <>
-      <HomeHeader onCategoryHover={setHoveredCategory} alwaysLight={isCategoryPage} />
+      <HomeHeader onCategoryHover={setHoveredCategory} alwaysLight={isCategoryPage} categoryPage={isCategoryPage} />
       {pathname === '/' && <HomeSocialLinks />}
     </> : <header className="site-header">
       <Link className="wordmark" to="/" aria-label="Nazanin Akbari home">NA<span>.</span></Link>
@@ -136,7 +136,7 @@ function HomeSocialLinks() {
   </nav>
 }
 
-function HomeHeader({ onCategoryHover, alwaysLight = false }) {
+function HomeHeader({ onCategoryHover, alwaysLight = false, categoryPage = false }) {
   const { pathname, search } = useLocation()
   const introIsActive = useIntroSlideActive()
   const selectedCategory = new URLSearchParams(search).get('category')
@@ -147,7 +147,7 @@ function HomeHeader({ onCategoryHover, alwaysLight = false }) {
     window.dispatchEvent(new Event('portfolio:home-top'))
   }
 
-  return <header className={`experience-header${introIsActive || alwaysLight ? ' experience-header--light' : ''}`}>
+  return <header className={`experience-header${introIsActive || alwaysLight ? ' experience-header--light' : ''}${categoryPage ? ' experience-header--category' : ''}`}>
     <nav className="experience-nav" aria-label="Main navigation">
       <Link className={activeCategory === 'Projects' ? 'is-active-category' : undefined} to={categoryPaths.Projects} onMouseEnter={() => onCategoryHover('Projects')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Projects')} onBlur={() => onCategoryHover(null)}>PROJECTS</Link>
       <Link className={activeCategory === 'Collaborations' ? 'is-active-category' : undefined} to={categoryPaths.Collaborations} onMouseEnter={() => onCategoryHover('Collaborations')} onMouseLeave={() => onCategoryHover(null)} onFocus={() => onCategoryHover('Collaborations')} onBlur={() => onCategoryHover(null)}>COLLABORATIONS</Link>
