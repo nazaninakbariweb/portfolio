@@ -82,7 +82,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   white-space: nowrap;
 }
 .home-footer__brand p { margin: 14px 0 0; color: #77776f; font-size: 10px; }
-.home-footer__details { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.home-footer__details { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; padding-top: 5px; }
 .home-footer__column { display: flex; flex-direction: column; align-items: flex-start; gap: 11px; }
 .home-footer__column h2 { margin: 0 0 8px; font: 400 9px/1 Helvetica, Arial, sans-serif; letter-spacing: .1em; text-transform: uppercase; }
 .home-footer__column p, .home-footer__column a { margin: 0; color: #696a64; font-size: 10px; line-height: 1.7; }

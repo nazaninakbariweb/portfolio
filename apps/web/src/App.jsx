@@ -46,7 +46,7 @@ function SiteLayout() {
     </Routes>
     {pathname === '/' ? <HomeFooter /> : <footer className="site-footer">
       <div><p className="eyebrow">Have a project in mind?</p><Link className="footer-title" to="/contact">Let’s talk <span>↗</span></Link></div>
-      <div className="footer-meta"><span>© Nazanin Akbari 2026</span><span>Architecture · Interiors</span><a href="#top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Back to top ↑</a></div>
+      <div className="footer-meta"><span>© Nazanin Akbari</span><span>Architecture · Interiors</span><a href="#top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Back to top ↑</a></div>
     </footer>}
   </>
 }
@@ -81,7 +81,7 @@ function HomeFooter() {
       </div>
     </div>
     <div className="home-footer__bottom">
-      <span>© 2026 Nazanin Akbari</span>
+      <span>© Nazanin Akbari</span>
       <a href="#top" onClick={backToTop}>Back to top ↑</a>
     </div>
   </footer>
