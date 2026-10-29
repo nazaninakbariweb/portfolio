@@ -49,10 +49,10 @@ function SiteLayout() {
 function HomeSocialLinks() {
   return <nav className="home-social-links" aria-label="Social media">
     <a href="https://www.instagram.com/nazanin_akbary/" target="_blank" rel="noreferrer" aria-label="Instagram" title="Instagram">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" /><circle cx="12" cy="12" r="4" /><circle className="social-icon__fill" cx="17.6" cy="6.7" r="1" /></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.6" cy="6.7" r=".8" /></svg>
     </a>
     <a href="https://t.me/Nazaninnakbary" target="_blank" rel="noreferrer" aria-label="Telegram" title="Telegram">
-      <svg className="social-icon--telegram" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.4 4.6 18.2 20c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.3-8.4c.4-.4-.1-.6-.6-.2L5.6 13.6.7 12c-1.1-.4-1.1-1.1.2-1.6L20 2.9c.9-.3 1.7.2 1.4 1.7Z" /></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 3-7.6 18-3.7-7.1L3 10.3 21 3Z" /><path d="m9.7 13.9 5.1-4.6" /></svg>
     </a>
     <a className="home-social-links__linkedin" href="https://www.linkedin.com/in/nazanin-akbari-/" target="_blank" rel="noreferrer" aria-label="LinkedIn" title="LinkedIn">in</a>
   </nav>

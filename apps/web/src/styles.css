@@ -166,9 +166,9 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  color: rgba(255,255,255,.9);
+  color: rgba(255,255,255,.82);
   transform: translateY(-50%);
-  filter: drop-shadow(0 1px 4px rgba(0,0,0,.35));
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.28));
 }
 .home-social-links > a {
   display: grid;
@@ -186,14 +186,12 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   height: 13px;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.35;
+  stroke-width: 1.05;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.home-social-links svg .social-icon__fill,
-.home-social-links svg.social-icon--telegram { fill: currentColor; stroke: none; }
 .home-social-links__linkedin {
-  font: 600 12px/1 'DM Sans', sans-serif;
+  font: 400 11px/1 'DM Sans', sans-serif;
   letter-spacing: -.08em;
 }
 .home-experience {
