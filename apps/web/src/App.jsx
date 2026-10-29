@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { client, imageUrl } from './sanity.js'
 
@@ -119,31 +119,58 @@ const placeholderSlides = [
 function HomePage() {
   const navigate = useNavigate()
   const { projects } = useProjects(`*[_type == "project" && defined(slug.current) && defined(cover.asset)] | order(featured desc, year desc){_id, title, category, year, cover}`)
+  const { projects: homepageDocuments } = useProjects(`*[_type == "homepageSettings" && _id == "homepageSettings"][0]{
+    heroImages[]{..., "src": asset->url},
+    heroVideos[]{"src": asset->url},
+    "collaborationsVideo": collaborationsVideo.asset->url
+  }`)
+  const homepageMedia = homepageDocuments[0]
   const [activeHeroImage, setActiveHeroImage] = useState(0)
-  const slides = projects.length
-    ? projects.map((project) => ({
-        title: project.title,
-        category: project.category,
-        year: project.year,
-        src: imageUrl(project.cover).width(2400).fit('crop').url(),
-      }))
-    : placeholderSlides
-  const slideIndex = activeHeroImage % slides.length
-  const currentSlide = slides[slideIndex]
+  const configuredSlides = homepageMedia?.heroImages?.length === 4 && homepageMedia?.heroVideos?.length === 3
+    ? [
+        ...homepageMedia.heroImages.filter((item) => item.src).map((item) => ({ type: 'image', src: imageUrl(item).width(2400).fit('crop').url() })),
+        ...homepageMedia.heroVideos.filter((item) => item.src).map((item) => ({ type: 'video', src: item.src })),
+      ]
+    : []
+  const slides = configuredSlides.length === 7
+    ? configuredSlides
+    : projects.length
+      ? projects.map((project) => ({
+          type: 'image',
+          title: project.title,
+          category: project.category,
+          year: project.year,
+          src: imageUrl(project.cover).width(2400).fit('crop').url(),
+        }))
+      : placeholderSlides.map((slide) => ({ ...slide, type: 'image' }))
+  const slideSignature = slides.map(({ type, src }) => `${type}:${src}`).join('|')
+  const randomizedSlides = useMemo(() => {
+    const shuffled = [...slides]
+    for (let index = shuffled.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(Math.random() * (index + 1))
+      ;[shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]]
+    }
+    return shuffled
+  }, [slideSignature])
+  const slideIndex = activeHeroImage % randomizedSlides.length
+  const currentSlide = randomizedSlides[slideIndex]
   const categories = placeholderSlides.map(({ category }) => category)
 
   useEffect(() => {
-    if (slides.length < 2) return
+    setActiveHeroImage(0)
+    if (randomizedSlides.length < 2) return
     const timer = window.setInterval(() => {
-      setActiveHeroImage((index) => (index + 1) % slides.length)
-    }, 6000)
+      setActiveHeroImage((index) => (index + 1) % randomizedSlides.length)
+    }, 5000)
     return () => window.clearInterval(timer)
-  }, [slides.length])
+  }, [slideSignature, randomizedSlides.length])
 
   useEffect(() => {
-    const next = new Image()
-    next.src = slides[(slideIndex + 1) % slides.length].src
-  }, [slideIndex, slides.length])
+    const next = randomizedSlides[(slideIndex + 1) % randomizedSlides.length]
+    if (next?.type !== 'image') return
+    const image = new Image()
+    image.src = next.src
+  }, [slideIndex, slideSignature])
 
   const categorySlides = categories.map((category) => {
     const project = projects.find((item) => item.category?.toLowerCase() === category.toLowerCase())
@@ -151,6 +178,7 @@ function HomePage() {
     return {
       category,
       image: project ? imageUrl(project.cover).width(2400).fit('crop').url() : fallback.src,
+      video: category === 'Collaborations' ? homepageMedia?.collaborationsVideo : null,
     }
   })
 
@@ -160,7 +188,9 @@ function HomePage() {
   >
     <div className="home-experience__track">
       <section className="home-hero" aria-label="Home">
-        <img className="home-hero__image" key={currentSlide.src} src={currentSlide.src} alt="" fetchPriority={slideIndex === 0 ? 'high' : 'auto'} />
+        {currentSlide.type === 'video'
+          ? <video className="home-hero__image" key={currentSlide.src} src={currentSlide.src} autoPlay muted playsInline preload="auto" aria-hidden="true" />
+          : <img className="home-hero__image" key={currentSlide.src} src={currentSlide.src} alt="" fetchPriority={slideIndex === 0 ? 'high' : 'auto'} />}
         <div className="home-hero__shade" aria-hidden="true" />
         <a className="experience-scroll" href="#home-intro" aria-label="Scroll to introduction">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v15m-6-6 6 6 6-6" /></svg>
@@ -169,15 +199,15 @@ function HomePage() {
       <section id="home-intro" className="home-intro-slide" aria-label="Introduction">
         <p>YOUR TEXT HERE</p>
       </section>
-      {categorySlides.map(({ category, image }) => <button
+      {categorySlides.map(({ category, image, video }) => <button
         key={category}
         id={category === 'Projects' ? 'category-projects' : undefined}
         type="button"
-        className="home-category-slide"
-        style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.28)), url("${image}")` }}
+        className={`home-category-slide${video ? ' home-category-slide--video' : ''}`}
+        style={video ? undefined : { backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.28)), url("${image}")` }}
         onClick={() => navigate(`/projects?category=${encodeURIComponent(category)}`)}
         aria-label={`Open ${category} projects`}
-      ><span>{category}</span></button>)}
+      >{video && <video className="home-category-slide__video" src={video} autoPlay muted loop playsInline preload="metadata" aria-hidden="true" />}<span>{category}</span></button>)}
     </div>
   </main>
 }

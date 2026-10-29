@@ -249,7 +249,17 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   background-size: cover;
   cursor: pointer;
 }
+.home-category-slide__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
 .home-category-slide span {
+  position: relative;
+  z-index: 1;
   font: 500 clamp(30px, 5vw, 76px)/1 'DM Sans', sans-serif;
   letter-spacing: -.045em;
   text-transform: uppercase;
