@@ -81,6 +81,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   background: #f4f2ed;
   font-size: 9px;
 }
+.info-page { color: #252622; background: #f4f2ed; }
 .page-main { min-height: 56vh; }
 .page-title { margin: 24px 0; font: 400 clamp(48px, 7vw, 90px)/1 'Playfair Display', serif; letter-spacing: -.05em; }
 .project-intro { padding-bottom: 42px; }

@@ -31,6 +31,7 @@ function SiteLayout() {
   const { pathname } = useLocation()
   const [hoveredCategory, setHoveredCategory] = useState(null)
   const isCategoryPage = Object.values(categoryPaths).includes(pathname)
+  const isInfoPage = pathname === '/about' || pathname === '/contact'
   const hasHomeStyleHeader = pathname === '/' || isCategoryPage
   useEffect(() => {
     let frame
@@ -50,7 +51,7 @@ function SiteLayout() {
       {pathname === '/' && <HomeSocialLinks />}
     </> : <header className="site-header">
       <Link className="wordmark" to="/" aria-label="Nazanin Akbari home">NA<span>.</span></Link>
-      <nav aria-label="Main navigation"><Link to="/projects" className={pathname.startsWith('/projects') ? 'is-active-category' : undefined}>Projects</Link><Link to="/about">About</Link><Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Home</Link><Link to="/contact">Contact</Link></nav>
+      <nav aria-label="Main navigation">{!isInfoPage && <Link to="/projects" className={pathname.startsWith('/projects') ? 'is-active-category' : undefined}>Projects</Link>}<Link to="/about">About</Link><Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Home</Link><Link to="/contact">Contact</Link></nav>
       <span className="header-note">Architecture · Interiors</span>
     </header>}
     <Routes>
@@ -64,7 +65,7 @@ function SiteLayout() {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
-    {pathname === '/' ? <HomeFooter /> : isCategoryPage ? <footer className="category-page__footer">
+    {pathname === '/' ? <HomeFooter /> : isCategoryPage || isInfoPage ? <footer className="category-page__footer">
       <span>© Nazanin Akbari</span>
     </footer> : <footer className="site-footer">
       <div><p className="eyebrow">Have a project in mind?</p><Link className="footer-title" to="/contact">Let’s talk <span>↗</span></Link></div>
@@ -459,11 +460,11 @@ function ContentBlock({ block }) {
 }
 
 function AboutPage() {
-  return <main className="section-wrap page-main"><p className="eyebrow">About</p><h1 className="page-title">Nazanin Akbari</h1><p className="about-copy">Architect and interior designer working across thoughtful spaces, material, and light.</p><p className="status-message">A fuller biography will be added here.</p></main>
+  return <main className="section-wrap page-main info-page"><p className="eyebrow">About</p><h1 className="page-title">Nazanin Akbari</h1><p className="about-copy">Architect and interior designer working across thoughtful spaces, material, and light.</p><p className="status-message">A fuller biography will be added here.</p></main>
 }
 
 function ContactPage() {
-  return <main className="section-wrap page-main"><p className="eyebrow">Contact</p><h1 className="page-title">Let’s talk.</h1><p className="status-message">Contact details will be added here.</p></main>
+  return <main className="section-wrap page-main info-page"><p className="eyebrow">Contact</p><h1 className="page-title">Let’s talk.</h1><p className="status-message">Contact details will be added here.</p></main>
 }
 
 function NotFoundPage() {
