@@ -74,10 +74,10 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   color: #252622;
   background: #f4f2ed;
 }
-.home-footer__brand { align-self: center; }
+.home-footer__brand { align-self: start; }
 .home-footer__logo {
   display: inline-block;
-  font: 700 clamp(34px, 5vw, 72px)/1 'DM Sans', sans-serif;
+  font: 700 clamp(24px, 3.5vw, 50px)/1 'DM Sans', sans-serif;
   letter-spacing: -.035em;
   white-space: nowrap;
 }
@@ -125,7 +125,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   .story-text h2 { font-size: 24px; }
   .home-footer { grid-template-columns: 1fr; gap: 48px; min-height: auto; padding: 70px 7vw 20px; }
   .home-footer__details { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 20px; }
-  .home-footer__logo { font-size: clamp(32px, 9vw, 48px); }
+  .home-footer__logo { font-size: clamp(22px, 6.3vw, 34px); }
   .home-footer__bottom { flex-wrap: wrap; justify-content: flex-start; }
   .site-footer { padding: 70px 7vw 20px; }
   .footer-meta { margin-top: 70px; flex-wrap: wrap; gap: 14px; }

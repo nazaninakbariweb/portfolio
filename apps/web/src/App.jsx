@@ -60,7 +60,7 @@ function HomeFooter() {
   return <footer className="home-footer">
     <div className="home-footer__brand">
       <Link className="home-footer__logo" to="/" onClick={backToTop}>NAZANIN AKBARI</Link>
-      <p>Architecture · Interiors</p>
+      <p>Architecture · Interiors · Objects</p>
     </div>
     <div className="home-footer__details">
       <div className="home-footer__column">
@@ -82,7 +82,6 @@ function HomeFooter() {
     </div>
     <div className="home-footer__bottom">
       <span>© 2026 Nazanin Akbari</span>
-      <span>Architecture · Interiors</span>
       <a href="#top" onClick={backToTop}>Back to top ↑</a>
     </div>
   </footer>
