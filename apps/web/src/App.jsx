@@ -22,13 +22,16 @@ function useProjects(query, params = {}) {
 
 function SiteLayout() {
   const { pathname } = useLocation()
+  useEffect(() => {
+    if (pathname === '/') window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [pathname])
   return <>
     {pathname === '/' ? <>
       <HomeHeader />
       <HomeSocialLinks />
     </> : <header className="site-header">
       <Link className="wordmark" to="/" aria-label="Nazanin Akbari home">NA<span>.</span></Link>
-      <nav aria-label="Main navigation"><Link to="/projects">Projects</Link><Link to="/about">About</Link><Link to="/contact">Contact</Link></nav>
+      <nav aria-label="Main navigation"><Link to="/projects" className={pathname.startsWith('/projects') ? 'is-active-category' : undefined}>Projects</Link><Link to="/about">About</Link><Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Home</Link><Link to="/contact">Contact</Link></nav>
       <span className="header-note">Architecture · Interiors</span>
     </header>}
     <Routes>
@@ -59,37 +62,29 @@ function HomeSocialLinks() {
 }
 
 function HomeHeader() {
-  const navigate = useNavigate()
-  const [searchOpen, setSearchOpen] = useState(false)
-  const [searchTerm, setSearchTerm] = useState('')
+  const { pathname, search } = useLocation()
+  const selectedCategory = new URLSearchParams(search).get('category')
+  const activeCategory = selectedCategory || (pathname === '/projects' ? 'Projects' : null)
 
-  function submitSearch(event) {
-    event.preventDefault()
-    const term = searchTerm.trim()
-    navigate(term ? `/projects?q=${encodeURIComponent(term)}` : '/projects')
+  function returnHome() {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return <header className="experience-header">
     <nav className="experience-nav" aria-label="Main navigation">
-      <Link to="/projects?category=Projects">PROJECTS</Link>
-      <Link to="/projects?category=Collaborations">COLLABORATIONS</Link>
-      <Link to="/projects?category=Objects">OBJECTS</Link>
-      <Link to="/projects?category=Explorations">EXPLORATIONS</Link>
-      <button type="button" aria-label={searchOpen ? 'Close search' : 'Search projects'} onClick={() => setSearchOpen((open) => !open)}>
-        {searchOpen ? <span className="search-close">×</span> : <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 5 5" /></svg>}
-      </button>
+      <Link className={activeCategory === 'Projects' ? 'is-active-category' : undefined} to="/projects?category=Projects">PROJECTS</Link>
+      <Link className={activeCategory === 'Collaborations' ? 'is-active-category' : undefined} to="/projects?category=Collaborations">COLLABORATIONS</Link>
+      <Link className={activeCategory === 'Objects' ? 'is-active-category' : undefined} to="/projects?category=Objects">OBJECTS</Link>
+      <Link className={activeCategory === 'Explorations' ? 'is-active-category' : undefined} to="/projects?category=Explorations">EXPLORATIONS</Link>
     </nav>
-    <Link className="experience-brand" to="/" aria-label="Nazanin Akbari home">
+    <Link className="experience-brand" to="/" aria-label="Nazanin Akbari home" onClick={returnHome}>
       <strong>NAZANIN AKBARI</strong>
     </Link>
-    <nav className="experience-actions" aria-label="Contact and about">
+    <nav className="experience-actions" aria-label="Home, contact and about">
+      <Link to="/" onClick={returnHome}>HOME</Link>
       <Link to="/contact">CONTACT</Link>
       <Link to="/about">ABOUT</Link>
     </nav>
-    {searchOpen && <form className="experience-search" onSubmit={submitSearch}>
-      <input autoFocus value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} aria-label="Search projects" placeholder="Search projects" />
-      <button type="submit" aria-label="Submit search">↗</button>
-    </form>}
   </header>
 }
 
@@ -223,7 +218,7 @@ function ProjectsPage() {
     return matchesCategory && (!searchTerm || searchable.includes(searchTerm))
   })
   const emptyMessage = projects.length && (searchTerm || category) ? 'No projects match this selection.' : 'Projects will appear here soon.'
-  return <main className="section-wrap page-main"><div className="section-heading"><p className="eyebrow">Selected work</p><h2>Projects</h2></div><ProjectGrid projects={filteredProjects} loading={loading} error={error} emptyMessage={emptyMessage} /></main>
+  return <main className="section-wrap page-main"><div className="section-heading"><p className="eyebrow">Selected work</p><h2 className={category ? 'category-title' : undefined}>{category || 'Projects'}</h2></div><ProjectGrid projects={filteredProjects} loading={loading} error={error} emptyMessage={emptyMessage} /></main>
 }
 
 function ProjectGrid({ projects, loading, error, emptyMessage = 'Projects will appear here soon.' }) {
