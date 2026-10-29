@@ -170,13 +170,16 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   transform: translateY(-50%);
   filter: drop-shadow(0 1px 4px rgba(0,0,0,.35));
 }
-.home-social-links > span {
+.home-social-links > a {
   display: grid;
   width: 14px;
   height: 14px;
   place-items: center;
+  color: inherit;
   opacity: .86;
+  transition: opacity 180ms ease;
 }
+.home-social-links > a:hover { opacity: .58; }
 .home-social-links svg {
   display: block;
   width: 13px;
@@ -187,7 +190,8 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.home-social-links svg .social-icon__fill { fill: currentColor; stroke: none; }
+.home-social-links svg .social-icon__fill,
+.home-social-links svg.social-icon--telegram { fill: currentColor; stroke: none; }
 .home-social-links__linkedin {
   font: 600 12px/1 'DM Sans', sans-serif;
   letter-spacing: -.08em;

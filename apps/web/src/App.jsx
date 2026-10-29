@@ -47,15 +47,15 @@ function SiteLayout() {
 }
 
 function HomeSocialLinks() {
-  return <div className="home-social-links" aria-label="Social media">
-    <span role="img" aria-label="Instagram" title="Instagram">
+  return <nav className="home-social-links" aria-label="Social media">
+    <a href="https://www.instagram.com/nazanin_akbary/" target="_blank" rel="noreferrer" aria-label="Instagram" title="Instagram">
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" /><circle cx="12" cy="12" r="4" /><circle className="social-icon__fill" cx="17.6" cy="6.7" r="1" /></svg>
-    </span>
-    <span role="img" aria-label="WhatsApp" title="WhatsApp">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 11.7a8.2 8.2 0 0 1-12.1 7.2L3 20l1.2-4.9a8.2 8.2 0 1 1 16-3.4Z" /><path d="M8.4 8.2c.3-.6.6-.6 1-.6h.4c.2 0 .4.1.5.4l.7 1.7c.1.2.1.4-.1.6l-.5.6c-.2.2-.2.4 0 .6.5.9 1.3 1.6 2.3 2.1.2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.6.8c.3.1.4.3.4.5 0 .4-.2 1-.6 1.3-.4.4-1 .6-1.6.6-.5 0-1.2-.2-2-.5-1.2-.5-2.4-1.4-3.4-2.5-.8-.9-1.4-1.9-1.6-2.7-.2-.8-.1-1.4.2-1.9Z" /></svg>
-    </span>
-    <span className="home-social-links__linkedin" role="img" aria-label="LinkedIn" title="LinkedIn">in</span>
-  </div>
+    </a>
+    <a href="https://t.me/Nazaninnakbary" target="_blank" rel="noreferrer" aria-label="Telegram" title="Telegram">
+      <svg className="social-icon--telegram" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.4 4.6 18.2 20c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.3-8.4c.4-.4-.1-.6-.6-.2L5.6 13.6.7 12c-1.1-.4-1.1-1.1.2-1.6L20 2.9c.9-.3 1.7.2 1.4 1.7Z" /></svg>
+    </a>
+    <a className="home-social-links__linkedin" href="https://www.linkedin.com/in/nazanin-akbari-/" target="_blank" rel="noreferrer" aria-label="LinkedIn" title="LinkedIn">in</a>
+  </nav>
 }
 
 function HomeHeader() {
