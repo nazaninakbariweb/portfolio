@@ -522,7 +522,7 @@ function ProjectSingleImage({ value }) {
   const src = value.imageUrl || imageUrl(value).width(1800).url()
   const width = Math.min(100, Math.max(20, Number(value.width) || 100))
   if (!src) return null
-  return <figure className="story-portable-image" style={{ '--image-width': `${Math.min(width, 92)}%` }}>
+  return <figure className="story-portable-image" style={{ '--image-width': `${width}%` }}>
     <img src={src} alt={value.caption || ''} loading="lazy" />
     {value.caption && <figcaption>{value.caption}</figcaption>}
   </figure>
