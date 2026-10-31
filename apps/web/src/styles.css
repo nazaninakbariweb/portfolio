@@ -92,7 +92,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .project-intro { padding-bottom: 42px; }
 .project-intro h1 { margin: 24px 0; font: 400 clamp(48px, 7vw, 90px)/1 'Playfair Display', serif; letter-spacing: -.05em; }
 .project-summary { max-width: 560px; color: #696a64; font-size: 14px; line-height: 1.8; }
-.detail-cover { display: block; width: 100%; max-height: 76vh; object-fit: cover; margin-top: 42px; }
+.detail-cover { display: block; width: calc(100% + 24vw); max-width: none; height: auto; max-height: none; object-fit: contain; margin: 42px -12vw 0; }
 .story-grid { display: grid; grid-template-columns: repeat(12,minmax(0,1fr)); gap: 22px 14px; padding: 0 6vw 100px; align-items: start; }
 .story-block { grid-column: var(--block-start) / span var(--block-span); min-width: 0; margin: 0; }
 .story-media img { height: auto; max-height: 85vh; }
@@ -179,6 +179,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   .story-image-row { flex-direction: column; }
   .story-image-row figure { width: 100%; }
   .story-portable-heading { font-size: 24px; }
+  .detail-cover { width: calc(100% + 14vw); margin-right: -7vw; margin-left: -7vw; }
   .home-footer { grid-template-columns: 1fr; gap: 48px; min-height: auto; padding: 70px 7vw 20px; }
   .home-footer__details { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 20px; }
   .home-footer__logo { font-size: clamp(22px, 6.3vw, 34px); }
