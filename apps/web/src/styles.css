@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap');
 
-:root { font-family: 'DM Sans', sans-serif; color: #252622; background: #f4f2ed; font-synthesis: none; text-rendering: optimizeLegibility; }
+:root { font-family: 'DM Sans', sans-serif; color: #252622; background: #ffffff; font-synthesis: none; text-rendering: optimizeLegibility; }
 * { box-sizing: border-box; }
 html {
   scroll-behavior: smooth;
@@ -40,7 +40,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .project-image { height: clamp(190px, 25vw, 350px); position: relative; overflow: hidden; background: #dfdbd2; }
 .project-image img, .story-media img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .project-image > span { position: absolute; top: 14px; left: 14px; z-index: 1; font-size: 9px; }
-.project-card--sample .project-image > span { padding: 5px 7px; color: #252622; background: #f4f2ed; font: 400 8px/1 Helvetica, Arial, sans-serif; letter-spacing: .04em; }
+.project-card--sample .project-image > span { padding: 5px 7px; color: #252622; background: #ffffff; font: 400 8px/1 Helvetica, Arial, sans-serif; letter-spacing: .04em; }
 .image-placeholder { width: 100%; height: 100%; background: linear-gradient(145deg,#d9d1c3,#b4a895 55%,#d9d6cc); }
 .project-caption { padding-top: 14px; display: flex; justify-content: space-between; }
 .project-caption h3 { margin: 0 0 5px; font: 400 19px 'Playfair Display', serif; }
@@ -53,7 +53,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .category-page {
   min-height: 100vh;
   color: #252622;
-  background: #f4f2ed;
+  background: #ffffff;
 }
 .category-page__hero {
   display: grid;
@@ -62,7 +62,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   min-height: 100svh;
   padding: 76px 24px 24px;
   place-items: center;
-  background: #f4f2ed;
+  background: #ffffff;
 }
 .category-page__hero h1 {
   margin: 0;
@@ -73,22 +73,22 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .category-page__work {
   min-height: 42vh;
   padding: 104px 6vw 100px;
-  background: #f4f2ed;
+  background: #ffffff;
 }
 .category-page__footer {
   padding: 24px 6vw;
   border-top: 1px solid #d8d5ce;
   color: #77776f;
-  background: #f4f2ed;
+  background: #ffffff;
   font-size: 9px;
 }
-.info-page { color: #252622; background: #f4f2ed; }
+.info-page { color: #252622; background: #ffffff; }
 .info-page .about-copy,
 .info-page .status-message { font: 400 clamp(10px, 1.12vw, 18px)/1.5 Helvetica, Arial, sans-serif; letter-spacing: normal; }
 .page-main { min-height: 56vh; }
 .page-title { margin: 24px 0; font: 400 clamp(48px, 7vw, 90px)/1 'Playfair Display', serif; letter-spacing: -.05em; }
 .info-page .about-page__title { margin: 24px 0; font: 700 clamp(10px, 1.12vw, 18px)/1 'DM Sans', sans-serif; letter-spacing: -.035em; }
-.project-detail { min-height: 100vh; color: #252622; background: #f4f2ed; }
+.project-detail { min-height: 100vh; color: #252622; background: #ffffff; }
 .project-intro { padding-bottom: 42px; }
 .project-intro h1 { margin: 24px 0; font: 400 clamp(48px, 7vw, 90px)/1 'Playfair Display', serif; letter-spacing: -.05em; }
 .project-summary { max-width: 560px; color: #696a64; font-size: 14px; line-height: 1.8; }
@@ -110,11 +110,11 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .story-portable-image figcaption, .story-image-row figcaption, .story-portable-video figcaption { margin-top: 10px; color: #77776f; font-size: 10px; text-align: center; }
 .story-image-row { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 8px; width: 100%; margin: 8px auto 20px; }
 .story-image-row figure { min-width: 0; margin: 0; }
-.story-portable-video video { display: block; width: 100%; max-height: 78vh; object-fit: contain; background: #e9e6de; }
+.story-portable-video video { display: block; width: 100%; max-height: 78vh; object-fit: contain; background: #ffffff; }
 .story-portable-text a { text-decoration: underline; text-underline-offset: 3px; }
-.story-media video { width: 100%; max-height: 80vh; background: #f4f2ed; }
+.story-media video { width: 100%; max-height: 80vh; background: #ffffff; }
 .drawing-link { display: inline-block; padding: 20px; border: 1px solid #d0cdc5; color: #696a64; font-size: 12px; }
-.site-footer { padding: 85px 12vw 24px; background: #e9e6de; }
+.site-footer { padding: 85px 12vw 24px; background: #ffffff; }
 .home-footer {
   display: grid;
   grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
@@ -122,7 +122,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   min-height: 58vh;
   padding: clamp(64px, 9vh, 120px) clamp(24px, 6vw, 110px) 24px;
   color: #252622;
-  background: #f4f2ed;
+  background: #ffffff;
 }
 .home-footer__brand { align-self: start; }
 .home-footer__logo {
@@ -274,7 +274,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .home-experience {
   position: relative;
   width: 100%;
-  background: #f4f2ed;
+  background: #ffffff;
 }
 .home-experience__track {
   display: block;
@@ -290,7 +290,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   flex: 0 0 100svh;
   overflow: hidden;
   color: #fff;
-  background: #f4f2ed;
+  background: #ffffff;
 }
 .home-intro-slide {
   display: grid;
@@ -301,7 +301,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   padding: 24px;
   place-items: center;
   color: #252622;
-  background: #f4f2ed;
+  background: #ffffff;
 }
 .home-intro-slide p {
   max-width: min(80vw, 900px);
@@ -314,7 +314,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .home-slide-divider {
   width: 100%;
   height: 36px;
-  background: #f4f2ed;
+  background: #ffffff;
 }
 .home-category-slide {
   position: relative;
@@ -327,7 +327,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   place-items: center;
   border: 0;
   color: #fff;
-  background-color: #f4f2ed;
+  background-color: #ffffff;
   background-position: center;
   background-size: cover;
   cursor: pointer;
