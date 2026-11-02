@@ -339,7 +339,7 @@ function HomePage({ hoveredCategory }) {
       const section = sections[activeSection]
       const bounds = section.getBoundingClientRect()
       const sectionTop = bounds.top + currentY
-      const threshold = bounds.height * (direction > 0 ? .8 : .2)
+      const threshold = bounds.height * (direction > 0 ? .7 : .3)
       let nextSection = activeSection
       if (direction > 0 && activeSection < sections.length - 1 && currentY >= sectionTop + threshold) nextSection += 1
       if (direction < 0 && activeSection > 0 && currentY <= sectionTop + threshold) nextSection -= 1
