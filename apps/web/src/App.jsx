@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { Component, useEffect, useMemo, useState } from 'react'
 import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { PortableText } from '@portabletext/react'
 import { client, imageUrl } from './sanity.js'
@@ -84,7 +84,7 @@ function SiteLayout() {
       <Route path="/collaborations" element={<ProjectsPage routeCategory="Collaborations" />} />
       <Route path="/objects" element={<ProjectsPage routeCategory="Objects" />} />
       <Route path="/explorations" element={<ProjectsPage routeCategory="Explorations" />} />
-      <Route path="/:category/:slug" element={<ProjectPage />} />
+      <Route path="/:category/:slug" element={<ProjectPageErrorBoundary key={pathname}><ProjectPage /></ProjectPageErrorBoundary>} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="*" element={<NotFoundPage />} />
@@ -492,6 +492,7 @@ function ProjectPage() {
   if (loading) return <main className="section-wrap page-main"><p className="status-message">Loading project…</p></main>
   if (error && !project) return <main className="section-wrap page-main"><p className="status-message">This project is temporarily unavailable. Please try again soon.</p></main>
   if (!project) return <main className="section-wrap page-main"><p className="status-message">Project not found.</p><Link className="text-link" to="/projects">Back to projects <span>↗</span></Link></main>
+  const content = Array.isArray(project.content) ? project.content.filter(Boolean) : []
   return <main className="project-detail page-main">
     <section className="project-intro section-wrap">
       <p className="eyebrow">{[project.category, project.year, project.location].filter(Boolean).join(' · ')}</p>
@@ -500,26 +501,67 @@ function ProjectPage() {
       {project.previewImage ? <img className="detail-cover" src={project.previewImage} alt={project.title} /> : project.cover?.url && <img className="detail-cover" src={imageUrl(project.cover).width(1800).url()} alt={project.cover.alt || project.title} />}
     </section>
     <section className="story-grid">
-      {(project.content || []).some((block) => ['projectText', 'projectImage', 'projectDrawing', 'projectVideo'].includes(block?._type))
-        ? (project.content || []).map((block) => <ContentBlock block={block} key={block._key} />)
-        : project.content?.length > 0 && <PortableText value={project.content} components={projectContentComponents} />}
+      {content.some((block) => ['projectText', 'projectImage', 'projectDrawing', 'projectVideo'].includes(block?._type))
+        ? content.map((block, index) => <ContentBlock block={block} key={block._key || index} />)
+        : content.length > 0 && <PortableText value={content} components={projectContentComponents} />}
     </section>
   </main>
 }
 
+class ProjectPageErrorBoundary extends Component {
+  state = { hasError: false }
+
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+
+  componentDidCatch(error) {
+    console.error('Project page failed to render:', error)
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <main className="project-detail page-main project-error">
+        <h1>This project could not be displayed.</h1>
+        <p>Please reload the page or return to the category.</p>
+        <button type="button" onClick={() => window.location.reload()}>Reload project</button>
+      </main>
+    }
+    return this.props.children
+  }
+}
+
+function safeImageUrl(source, width = 1800) {
+  if (typeof source === 'string') return source
+  if (!source || !source.asset) return ''
+  try {
+    return imageUrl(source).width(width).url()
+  } catch {
+    return ''
+  }
+}
+
 function ContentBlock({ block }) {
+  if (!block || typeof block !== 'object') return null
   const width = Math.min(12, Math.max(1, Number(block.layout?.width) || 12))
   const offset = Math.min(11, Math.max(0, Number(block.layout?.offset) || 0))
   const style = { '--block-span': width, '--block-start': offset + 1 }
   if (block._type === 'projectText') return <article className="story-block story-text" style={style}><div>{block.heading && <h2>{block.heading}</h2>}<p>{block.body}</p></div></article>
-  if (block._type === 'projectImage' && (block.imageUrl || block.previewImage)) return <figure className="story-block story-media" style={style}><img src={block.previewImage || imageUrl(block.image).width(1800).url()} alt={block.alt || ''} />{block.caption && <figcaption>{block.caption}</figcaption>}</figure>
-  if (block._type === 'projectDrawing') return <figure className="story-block story-media" style={style}>{block.imageUrl ? <img src={imageUrl(block.image).width(1600).url()} alt={block.alt || block.title || ''} /> : block.fileUrl ? <a className="drawing-link" href={block.fileUrl} target="_blank" rel="noreferrer">Open drawing: {block.title}</a> : null}{block.title && <figcaption>{block.title}</figcaption>}</figure>
+  if (block._type === 'projectImage') {
+    const src = block.previewImage || safeImageUrl(block.image)
+    return src ? <figure className="story-block story-media" style={style}><img src={src} alt={block.alt || ''} />{block.caption && <figcaption>{block.caption}</figcaption>}</figure> : null
+  }
+  if (block._type === 'projectDrawing') {
+    const src = block.imageUrl ? safeImageUrl(block.image, 1600) : ''
+    return <figure className="story-block story-media" style={style}>{src ? <img src={src} alt={block.alt || block.title || ''} /> : block.fileUrl ? <a className="drawing-link" href={block.fileUrl} target="_blank" rel="noreferrer">Open drawing: {block.title}</a> : null}{block.title && <figcaption>{block.title}</figcaption>}</figure>
+  }
   if (block._type === 'projectVideo') return <div className="story-block story-media" style={style}>{block.fileUrl ? <video controls preload="metadata" src={block.fileUrl}>{block.title}</video> : block.url ? <a className="drawing-link" href={block.url} target="_blank" rel="noreferrer">Watch video: {block.title || 'Open video'}</a> : null}</div>
   return null
 }
 
 function ProjectSingleImage({ value }) {
-  const src = value.imageUrl || imageUrl(value).width(1800).url()
+  if (!value || typeof value !== 'object') return null
+  const src = value.imageUrl || safeImageUrl(value)
   const width = Math.min(100, Math.max(20, Number(value.width) || 100))
   if (!src) return null
   return <figure className="story-portable-image" style={{ '--image-width': `${width}%` }}>
@@ -529,13 +571,13 @@ function ProjectSingleImage({ value }) {
 }
 
 function ProjectImageRow({ value }) {
-  const images = value.images || []
+  const images = Array.isArray(value?.images) ? value.images.filter((image) => image?.imageUrl || image?.asset) : []
   const [ratios, setRatios] = useState(images.map(() => 1))
   useEffect(() => setRatios(images.map(() => 1)), [images.length])
   if (!images.length) return null
   return <div className="story-image-row">
     {images.map((image, index) => {
-      const src = image.imageUrl || imageUrl(image).width(1600).url()
+      const src = image.imageUrl || safeImageUrl(image, 1600)
       if (!src) return null
       return <figure key={image._key || index} style={{ flex: `${ratios[index] || 1} 1 0` }}>
         <img
@@ -557,7 +599,7 @@ function ProjectImageRow({ value }) {
 }
 
 function ProjectVideo({ value }) {
-  if (!value.videoUrl) return null
+  if (!value?.videoUrl) return null
   return <figure className="story-portable-video">
     <video src={value.videoUrl} controls playsInline preload="metadata" />
     {value.caption && <figcaption>{value.caption}</figcaption>}

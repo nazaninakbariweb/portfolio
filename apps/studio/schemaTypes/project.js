@@ -30,6 +30,7 @@ const imageRow = defineType({
         {
           type: 'image',
           options: { hotspot: true },
+          validation: (rule) => rule.required(),
           fields: [defineField({ name: 'caption', title: 'Caption (optional)', type: 'string' })],
         },
       ],
