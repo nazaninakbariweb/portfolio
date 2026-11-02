@@ -564,9 +564,38 @@ function ProjectVideo({ value }) {
   </figure>
 }
 
+function getYouTubeEmbedId(markdownText = '') {
+  const match = markdownText.match(/<iframe\b[\s\S]*?\bsrc\s*=\s*["'](https?:\/\/[^"']+)["']/i)
+  if (!match) return null
+  try {
+    const url = new URL(match[1])
+    const allowedHosts = new Set(['youtube.com', 'www.youtube.com', 'youtube-nocookie.com', 'www.youtube-nocookie.com'])
+    const videoId = url.pathname.match(/^\/embed\/([\w-]{6,})$/)?.[1]
+    return allowedHosts.has(url.hostname) ? videoId || null : null
+  } catch {
+    return null
+  }
+}
+
+function PortableTextParagraph({ children, value }) {
+  const source = (value.children || []).map((child) => child.text || '').join('')
+  const videoId = getYouTubeEmbedId(source)
+  if (videoId) {
+    return <div className="story-youtube-embed"><iframe
+      src={`https://www.youtube-nocookie.com/embed/${videoId}`}
+      title="YouTube project video"
+      loading="lazy"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerPolicy="strict-origin-when-cross-origin"
+      allowFullScreen
+    /></div>
+  }
+  return <p className="story-portable-text">{children}</p>
+}
+
 const projectContentComponents = {
   block: {
-    normal: ({ children }) => <p className="story-portable-text">{children}</p>,
+    normal: PortableTextParagraph,
     h2: ({ children }) => <h2 className="story-portable-heading">{children}</h2>,
     h3: ({ children }) => <h3 className="story-portable-subheading">{children}</h3>,
     blockquote: ({ children }) => <blockquote className="story-portable-quote">{children}</blockquote>,
