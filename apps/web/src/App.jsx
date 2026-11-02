@@ -307,7 +307,7 @@ function HomePage({ hoveredCategory }) {
       const startY = window.scrollY
       const targetTop = sections[targetIndex].getBoundingClientRect().top + startY
       const distance = targetTop - startY
-      const duration = 1500
+      const duration = 360
       const startTime = performance.now()
       originalScrollBehavior = document.documentElement.style.scrollBehavior
       document.documentElement.style.scrollBehavior = 'auto'
@@ -315,9 +315,7 @@ function HomePage({ hoveredCategory }) {
 
       function frame(now) {
         const progress = Math.min(1, (now - startTime) / duration)
-        const eased = progress < .5
-          ? 16 * progress ** 5
-          : 1 - Math.pow(-2 * progress + 2, 5) / 2
+        const eased = 1 - Math.pow(1 - progress, 3)
         window.scrollTo(0, startY + distance * eased)
         if (progress < 1) {
           animationFrame = window.requestAnimationFrame(frame)
@@ -341,20 +339,15 @@ function HomePage({ hoveredCategory }) {
       const section = sections[activeSection]
       const bounds = section.getBoundingClientRect()
       const sectionTop = bounds.top + currentY
-      const threshold = Math.min(bounds.height, window.innerHeight) / 2
+      const threshold = bounds.height * (direction > 0 ? .8 : .2)
       let nextSection = activeSection
       if (direction > 0 && activeSection < sections.length - 1 && currentY >= sectionTop + threshold) nextSection += 1
-      if (direction < 0 && activeSection > 0 && currentY <= sectionTop - threshold) nextSection -= 1
+      if (direction < 0 && activeSection > 0 && currentY <= sectionTop + threshold) nextSection -= 1
       if (nextSection !== activeSection) animateTo(nextSection)
     }
 
-    function onWheel(event) {
-      if (animationFrame !== null) event.preventDefault()
-    }
-
-    function onTouchMove(event) {
-      if (animationFrame !== null) event.preventDefault()
-    }
+    function onWheel() { cancelAnimation() }
+    function onTouchMove() { cancelAnimation() }
 
     function onHomeTop() {
       cancelAnimation()
@@ -362,9 +355,9 @@ function HomePage({ hoveredCategory }) {
     }
 
     window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('wheel', onWheel, { passive: false })
+    window.addEventListener('wheel', onWheel, { passive: true })
     window.addEventListener('touchstart', cancelAnimation, { passive: true })
-    window.addEventListener('touchmove', onTouchMove, { passive: false })
+    window.addEventListener('touchmove', onTouchMove, { passive: true })
     window.addEventListener('portfolio:home-top', onHomeTop)
     return () => {
       window.removeEventListener('scroll', onScroll)
