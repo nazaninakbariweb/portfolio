@@ -450,10 +450,26 @@ function ProjectPage() {
   const category = categoryFromPath(`/${categoryPath}`)
   const { projects, loading, error } = useProjects(`*[_type == "project" && category == $category]{${projectFields}}`, { category })
   const project = projects.find((item) => projectUrlSlug(item, projects) === slug)
+  const [lightboxIndex, setLightboxIndex] = useState(null)
   if (loading) return <main className="section-wrap page-main"><p className="status-message">Loading project…</p></main>
   if (error && !project) return <main className="section-wrap page-main"><p className="status-message">This project is temporarily unavailable. Please try again soon.</p></main>
   if (!project) return <main className="section-wrap page-main"><p className="status-message">Project not found.</p><Link className="text-link" to="/projects">Back to projects <span>↗</span></Link></main>
   const content = Array.isArray(project.content) ? project.content.filter(Boolean) : []
+  const galleryImages = [project.cover?.url && { src: imageUrl(project.cover).width(2200).url(), alt: project.cover.alt || project.title }, ...content.flatMap((block) => {
+    const candidates = block._type === 'layoutImage' ? [block]
+      : ['imageRow', 'imageCarousel'].includes(block._type) ? block.images || []
+        : block._type === 'projectImage' ? [{ ...block.image, imageUrl: block.previewImage || safeImageUrl(block.image), caption: block.alt }]
+          : block._type === 'projectDrawing' ? [{ ...block.image, imageUrl: block.imageUrl ? safeImageUrl(block.image, 2200) : '', caption: block.title }]
+            : []
+    return candidates.map((image) => ({ src: image.imageUrl || safeImageUrl(image, 2200), alt: image.caption || '' })).filter((image) => image.src)
+  })].filter(Boolean)
+  const openProjectImage = (src) => {
+    const clickedPath = (() => { try { return new URL(src, window.location.origin).pathname } catch { return src } })()
+    const imageIndex = galleryImages.findIndex((image) => image.src === src || (() => {
+      try { return new URL(image.src, window.location.origin).pathname === clickedPath } catch { return false }
+    })())
+    setLightboxIndex(Math.max(0, imageIndex))
+  }
   return <main className="project-detail page-main">
     <section className="project-intro section-wrap">
       <p className="eyebrow">{[project.category, project.year, project.location].filter(Boolean).join(' · ')}</p>
@@ -463,9 +479,10 @@ function ProjectPage() {
     </section>
     <section className="story-grid">
       {content.some((block) => ['projectText', 'projectImage', 'projectDrawing', 'projectVideo'].includes(block?._type))
-        ? content.map((block, index) => <ContentBlock block={block} key={block._key || index} />)
-        : content.length > 0 && <PortableText value={content} components={projectContentComponents} />}
+        ? content.map((block, index) => <ContentBlock block={block} key={block._key || index} onImageClick={openProjectImage} />)
+        : content.length > 0 && <PortableText value={content} components={createProjectContentComponents(openProjectImage)} />}
     </section>
+    {lightboxIndex !== null && <ProjectImageLightbox images={galleryImages} index={lightboxIndex} onChange={setLightboxIndex} onClose={() => setLightboxIndex(null)} />}
   </main>
 }
 
@@ -502,7 +519,7 @@ function safeImageUrl(source, width = 1800) {
   }
 }
 
-function ContentBlock({ block }) {
+function ContentBlock({ block, onImageClick }) {
   if (!block || typeof block !== 'object') return null
   const width = Math.min(12, Math.max(1, Number(block.layout?.width) || 12))
   const offset = Math.min(11, Math.max(0, Number(block.layout?.offset) || 0))
@@ -510,28 +527,28 @@ function ContentBlock({ block }) {
   if (block._type === 'projectText') return <article className="story-block story-text" style={style}><div>{block.heading && <h2>{block.heading}</h2>}<p>{block.body}</p></div></article>
   if (block._type === 'projectImage') {
     const src = block.previewImage || safeImageUrl(block.image)
-    return src ? <figure className="story-block story-media" style={style}><img src={src} alt={block.alt || ''} />{block.caption && <figcaption>{block.caption}</figcaption>}</figure> : null
+    return src ? <figure className="story-block story-media" style={style}><button className="project-image-trigger" onClick={() => onImageClick(src)} aria-label={`View ${block.alt || 'project image'}`}><img src={src} alt={block.alt || ''} /></button>{block.caption && <figcaption>{block.caption}</figcaption>}</figure> : null
   }
   if (block._type === 'projectDrawing') {
     const src = block.imageUrl ? safeImageUrl(block.image, 1600) : ''
-    return <figure className="story-block story-media" style={style}>{src ? <img src={src} alt={block.alt || block.title || ''} /> : block.fileUrl ? <a className="drawing-link" href={block.fileUrl} target="_blank" rel="noreferrer">Open drawing: {block.title}</a> : null}{block.title && <figcaption>{block.title}</figcaption>}</figure>
+    return <figure className="story-block story-media" style={style}>{src ? <button className="project-image-trigger" onClick={() => onImageClick(src)} aria-label={`View ${block.title || 'project drawing'}`}><img src={src} alt={block.alt || block.title || ''} /></button> : block.fileUrl ? <a className="drawing-link" href={block.fileUrl} target="_blank" rel="noreferrer">Open drawing: {block.title}</a> : null}{block.title && <figcaption>{block.title}</figcaption>}</figure>
   }
   if (block._type === 'projectVideo') return <div className="story-block story-media" style={style}>{block.fileUrl ? <video controls preload="metadata" src={block.fileUrl}>{block.title}</video> : block.url ? <a className="drawing-link" href={block.url} target="_blank" rel="noreferrer">Watch video: {block.title || 'Open video'}</a> : null}</div>
   return null
 }
 
-function ProjectSingleImage({ value }) {
+function ProjectSingleImage({ value, onImageClick }) {
   if (!value || typeof value !== 'object') return null
   const src = value.imageUrl || safeImageUrl(value)
   const width = Math.min(100, Math.max(20, Number(value.width) || 100))
   if (!src) return null
   return <figure className="story-portable-image" style={{ '--image-width': `${width}%` }}>
-    <img src={src} alt={value.caption || ''} loading="lazy" />
+    <button className="project-image-trigger" onClick={() => onImageClick(src)} aria-label={`View ${value.caption || 'project image'}`}><img src={src} alt={value.caption || ''} loading="lazy" /></button>
     {value.caption && <figcaption>{value.caption}</figcaption>}
   </figure>
 }
 
-function ProjectImageRow({ value }) {
+function ProjectImageRow({ value, onImageClick }) {
   const images = Array.isArray(value?.images) ? value.images.filter((image) => image?.imageUrl || image?.asset) : []
   const [ratios, setRatios] = useState(images.map(() => 1))
   useEffect(() => setRatios(images.map(() => 1)), [images.length])
@@ -541,7 +558,7 @@ function ProjectImageRow({ value }) {
       const src = image.imageUrl || safeImageUrl(image, 1600)
       if (!src) return null
       return <figure key={image._key || index} style={{ flex: `${ratios[index] || 1} 1 0` }}>
-        <img
+        <button className="project-image-trigger" onClick={() => onImageClick(src)} aria-label={`View ${image.caption || 'project image'}`}><img
           src={src}
           alt={image.caption || ''}
           loading="lazy"
@@ -552,14 +569,14 @@ function ProjectImageRow({ value }) {
               setRatios((current) => current.map((item, itemIndex) => itemIndex === index ? ratio : item))
             }
           }}
-        />
+        /></button>
         {image.caption && <figcaption>{image.caption}</figcaption>}
       </figure>
     })}
   </div>
 }
 
-function ProjectImageCarousel({ value }) {
+function ProjectImageCarousel({ value, onImageClick }) {
   const images = Array.isArray(value?.images) ? value.images.filter((image) => image?.imageUrl || image?.asset) : []
   const trackRef = useRef(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
@@ -594,7 +611,7 @@ function ProjectImageCarousel({ value }) {
         const src = image.imageUrl || safeImageUrl(image, 1800)
         if (!src) return null
         return <figure key={image._key || index}>
-          <img src={src} alt={image.caption || ''} loading="lazy" />
+          <button className="project-image-trigger" onClick={() => onImageClick(src)} aria-label={`View ${image.caption || 'project image'}`}><img src={src} alt={image.caption || ''} loading="lazy" /></button>
           {image.caption && <figcaption>{image.caption}</figcaption>}
         </figure>
       })}
@@ -653,7 +670,8 @@ function PortableTextParagraph({ children, value }) {
   return <p className="story-portable-text">{children}</p>
 }
 
-const projectContentComponents = {
+function createProjectContentComponents(onImageClick) {
+  return {
   block: {
     normal: PortableTextParagraph,
     h2: ({ children }) => <h2 className="story-portable-heading">{children}</h2>,
@@ -664,11 +682,36 @@ const projectContentComponents = {
     link: ({ children, value }) => <a href={value?.href} target="_blank" rel="noreferrer">{children}</a>,
   },
   types: {
-    layoutImage: ProjectSingleImage,
-    imageRow: ProjectImageRow,
-    imageCarousel: ProjectImageCarousel,
+    layoutImage: (props) => <ProjectSingleImage {...props} onImageClick={onImageClick} />,
+    imageRow: (props) => <ProjectImageRow {...props} onImageClick={onImageClick} />,
+    imageCarousel: (props) => <ProjectImageCarousel {...props} onImageClick={onImageClick} />,
     layoutVideo: ProjectVideo,
   },
+  }
+}
+
+function ProjectImageLightbox({ images, index, onChange, onClose }) {
+  const activeImage = images[index]
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') onClose()
+      if (event.key === 'ArrowRight') onChange((current) => (current + 1) % images.length)
+      if (event.key === 'ArrowLeft') onChange((current) => (current - 1 + images.length) % images.length)
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    document.body.style.overflow = 'hidden'
+    return () => { document.removeEventListener('keydown', handleKeyDown); document.body.style.overflow = '' }
+  }, [images.length, onChange, onClose])
+  if (!activeImage) return null
+  return <div className="project-lightbox" role="dialog" aria-modal="true" aria-label="Project image gallery" onClick={onClose}>
+    <button className="project-lightbox__close" onClick={onClose} aria-label="Close gallery">×</button>
+    <button className="project-lightbox__arrow project-lightbox__arrow--left" onClick={(event) => { event.stopPropagation(); onChange((index - 1 + images.length) % images.length) }} aria-label="Previous image">←</button>
+    <figure onClick={(event) => event.stopPropagation()}>
+      <img src={activeImage.src} alt={activeImage.alt} />
+      <figcaption>{index + 1} / {images.length}{activeImage.alt ? ` · ${activeImage.alt}` : ''}</figcaption>
+    </figure>
+    <button className="project-lightbox__arrow project-lightbox__arrow--right" onClick={(event) => { event.stopPropagation(); onChange((index + 1) % images.length) }} aria-label="Next image">→</button>
+  </div>
 }
 
 function AboutPage() {
