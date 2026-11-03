@@ -1,4 +1,4 @@
-import { Component, useEffect, useMemo, useState } from 'react'
+import { Component, useEffect, useMemo, useRef, useState } from 'react'
 import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { PortableText } from '@portabletext/react'
 import { client, imageUrl } from './sanity.js'
@@ -34,6 +34,7 @@ const projectFields = `
     ...,
     _type == "layoutImage" => {"imageUrl": asset->url},
     _type == "imageRow" => {"images": images[]{..., "imageUrl": asset->url}},
+    _type == "imageCarousel" => {"images": images[]{..., "imageUrl": asset->url}},
     _type == "layoutVideo" => {"videoUrl": asset->url}
   }
 `
@@ -558,6 +559,51 @@ function ProjectImageRow({ value }) {
   </div>
 }
 
+function ProjectImageCarousel({ value }) {
+  const images = Array.isArray(value?.images) ? value.images.filter((image) => image?.imageUrl || image?.asset) : []
+  const trackRef = useRef(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
+
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return undefined
+    const updateArrows = () => {
+      setCanScrollLeft(track.scrollLeft > 2)
+      setCanScrollRight(track.scrollLeft + track.clientWidth < track.scrollWidth - 2)
+    }
+    updateArrows()
+    track.addEventListener('scroll', updateArrows, { passive: true })
+    const observer = new ResizeObserver(updateArrows)
+    observer.observe(track)
+    return () => {
+      track.removeEventListener('scroll', updateArrows)
+      observer.disconnect()
+    }
+  }, [images.length])
+
+  if (!images.length) return null
+  const move = (direction) => {
+    const track = trackRef.current
+    if (track) track.scrollBy({ left: direction * track.clientWidth * 0.8, behavior: 'smooth' })
+  }
+
+  return <div className="story-image-carousel">
+    <div className="story-image-carousel__track" ref={trackRef}>
+      {images.map((image, index) => {
+        const src = image.imageUrl || safeImageUrl(image, 1800)
+        if (!src) return null
+        return <figure key={image._key || index}>
+          <img src={src} alt={image.caption || ''} loading="lazy" />
+          {image.caption && <figcaption>{image.caption}</figcaption>}
+        </figure>
+      })}
+    </div>
+    {canScrollLeft && <button className="story-image-carousel__arrow story-image-carousel__arrow--left" type="button" aria-label="Show previous images" onClick={() => move(-1)}>←</button>}
+    {canScrollRight && <button className="story-image-carousel__arrow story-image-carousel__arrow--right" type="button" aria-label="Show next images" onClick={() => move(1)}>→</button>}
+  </div>
+}
+
 function ProjectVideo({ value }) {
   if (!value?.videoUrl) return null
   return <figure className="story-portable-video">
@@ -620,6 +666,7 @@ const projectContentComponents = {
   types: {
     layoutImage: ProjectSingleImage,
     imageRow: ProjectImageRow,
+    imageCarousel: ProjectImageCarousel,
     layoutVideo: ProjectVideo,
   },
 }

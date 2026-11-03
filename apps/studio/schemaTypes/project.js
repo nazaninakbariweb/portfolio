@@ -43,6 +43,32 @@ const imageRow = defineType({
   },
 })
 
+const imageCarousel = defineType({
+  name: 'imageCarousel',
+  title: 'Image Carousel (horizontal gallery)',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'images',
+      title: 'Images (add as many as you need)',
+      type: 'array',
+      of: [
+        {
+          type: 'image',
+          options: { hotspot: true },
+          validation: (rule) => rule.required(),
+          fields: [defineField({ name: 'caption', title: 'Caption (optional)', type: 'string' })],
+        },
+      ],
+      validation: (rule) => rule.min(2),
+    }),
+  ],
+  preview: {
+    select: { images: 'images' },
+    prepare: ({ images }) => ({ title: `Image carousel (${images?.length || 0} images)` }),
+  },
+})
+
 const layoutVideo = defineType({
   name: 'layoutVideo',
   title: 'Video',
@@ -70,13 +96,14 @@ export const project = defineType({
     defineField({
       name: 'content',
       title: 'Project Page Content',
-      description: 'Add text, single images, image rows, and videos in order. Drag items to reorder them.',
+      description: 'Add text, single images, image rows, horizontal image carousels, and videos in order. Drag items to reorder them.',
       type: 'array',
       group: 'content',
       of: [
         { type: 'block' },
         { type: 'layoutImage' },
         { type: 'imageRow' },
+        { type: 'imageCarousel' },
         { type: 'layoutVideo' },
       ],
       options: { sortable: true },
@@ -88,4 +115,4 @@ export const project = defineType({
   },
 })
 
-export const projectSchemaTypes = [layoutImage, imageRow, layoutVideo, project]
+export const projectSchemaTypes = [layoutImage, imageRow, imageCarousel, layoutVideo, project]
