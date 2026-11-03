@@ -566,14 +566,26 @@ function ProjectVideo({ value }) {
   </figure>
 }
 
-function getYouTubeEmbedId(markdownText = '') {
+function getProjectVideoEmbed(markdownText = '') {
   const match = markdownText.match(/<iframe\b[\s\S]*?\bsrc\s*=\s*["'](https?:\/\/[^"']+)["']/i)
   if (!match) return null
   try {
-    const url = new URL(match[1])
-    const allowedHosts = new Set(['youtube.com', 'www.youtube.com', 'youtube-nocookie.com', 'www.youtube-nocookie.com'])
-    const videoId = url.pathname.match(/^\/embed\/([\w-]{6,})$/)?.[1]
-    return allowedHosts.has(url.hostname) ? videoId || null : null
+    const url = new URL(match[1].replace(/&amp;/gi, '&'))
+    const youtubeHosts = new Set(['youtube.com', 'www.youtube.com', 'youtube-nocookie.com', 'www.youtube-nocookie.com'])
+    if (youtubeHosts.has(url.hostname)) {
+      const videoId = url.pathname.match(/^\/embed\/([\w-]{6,})$/)?.[1]
+      return videoId ? { provider: 'YouTube', src: `https://www.youtube-nocookie.com/embed/${videoId}` } : null
+    }
+
+    if (url.hostname === 'player.vimeo.com' || url.hostname === 'vimeo.com' || url.hostname === 'www.vimeo.com') {
+      const videoId = url.pathname.match(url.hostname === 'player.vimeo.com' ? /^\/video\/(\d+)$/ : /^\/(\d+)$/)?.[1]
+      if (!videoId) return null
+      const params = new URLSearchParams({ title: '0', byline: '0', portrait: '0', badge: '0' })
+      const privacyHash = url.searchParams.get('h')
+      if (privacyHash) params.set('h', privacyHash)
+      return { provider: 'Vimeo', src: `https://player.vimeo.com/video/${videoId}?${params}` }
+    }
+    return null
   } catch {
     return null
   }
@@ -581,11 +593,11 @@ function getYouTubeEmbedId(markdownText = '') {
 
 function PortableTextParagraph({ children, value }) {
   const source = (value.children || []).map((child) => child.text || '').join('')
-  const videoId = getYouTubeEmbedId(source)
-  if (videoId) {
+  const videoEmbed = getProjectVideoEmbed(source)
+  if (videoEmbed) {
     return <div className="story-youtube-embed"><iframe
-      src={`https://www.youtube-nocookie.com/embed/${videoId}`}
-      title="YouTube project video"
+      src={videoEmbed.src}
+      title={`${videoEmbed.provider} project video`}
       loading="lazy"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       referrerPolicy="strict-origin-when-cross-origin"
