@@ -469,6 +469,10 @@ function ProjectPage() {
   const heroVideoBlock = content.find((block) => ['block', 'projectText', 'projectVideo'].includes(block._type) && getProjectVideoEmbed(getBlockText(block))?.provider === 'Vimeo')
   const heroVideo = heroVideoBlock && getProjectVideoEmbed(getBlockText(heroVideoBlock))
   const visibleContent = heroVideoBlock ? content.filter((block) => block !== heroVideoBlock) : content
+  const isProjectMedia = (block) => ['layoutImage', 'imageRow', 'imageCarousel', 'layoutVideo', 'projectImage', 'projectDrawing', 'projectVideo'].includes(block?._type)
+  const firstMediaIndex = visibleContent.findIndex(isProjectMedia)
+  const introductoryContent = firstMediaIndex === -1 ? visibleContent : visibleContent.slice(0, firstMediaIndex)
+  const remainingContent = firstMediaIndex === -1 ? [] : visibleContent.slice(firstMediaIndex)
   const compactProjectType = project.summary && project.summary.length <= 60 ? project.summary : ''
   const galleryImages = [project.cover?.url && { src: imageUrl(project.cover).width(2200).url(), alt: project.cover.alt || project.title }, ...content.flatMap((block) => {
     const candidates = block._type === 'layoutImage' ? [block]
@@ -485,19 +489,24 @@ function ProjectPage() {
     })())
     setLightboxIndex(Math.max(0, imageIndex))
   }
+  const renderProjectContent = (blocks) => blocks.map((block, index) => {
+    if (['projectText', 'projectImage', 'projectDrawing', 'projectVideo'].includes(block._type)) {
+      return <ContentBlock block={block} key={block._key || index} onImageClick={openProjectImage} />
+    }
+    return <PortableText key={block._key || index} value={[block]} components={createProjectContentComponents(openProjectImage)} />
+  })
   return <main className="project-detail page-main">
     {heroVideo && <VimeoProjectHero src={heroVideo.src} title={`${project.title} video`} />}
     <section className="project-intro section-wrap">
       <p className="eyebrow">{[project.category, project.year, project.location, compactProjectType].filter(Boolean).join(' · ')}</p>
       <h1>{project.title}</h1>
       {project.summary && !compactProjectType && <p className="project-summary">{project.summary}</p>}
-      {project.previewImage ? <img className="detail-cover" src={project.previewImage} alt={project.title} /> : project.cover?.url && <img className="detail-cover" src={imageUrl(project.cover).width(1800).url()} alt={project.cover.alt || project.title} />}
     </section>
-    <section className="story-grid">
-      {visibleContent.some((block) => ['projectText', 'projectImage', 'projectDrawing', 'projectVideo'].includes(block?._type))
-        ? visibleContent.map((block, index) => <ContentBlock block={block} key={block._key || index} onImageClick={openProjectImage} />)
-        : visibleContent.length > 0 && <PortableText value={visibleContent} components={createProjectContentComponents(openProjectImage)} />}
-    </section>
+    {introductoryContent.length > 0 && <section className="story-grid project-description">{renderProjectContent(introductoryContent)}</section>}
+    {(project.previewImage || project.cover?.url) && <section className="project-cover-wrap">
+      <img className="detail-cover" src={project.previewImage || imageUrl(project.cover).width(1800).url()} alt={project.cover?.alt || project.title} />
+    </section>}
+    {remainingContent.length > 0 && <section className="story-grid">{renderProjectContent(remainingContent)}</section>}
     {lightboxIndex !== null && <ProjectImageLightbox images={galleryImages} index={lightboxIndex} onChange={setLightboxIndex} onClose={() => setLightboxIndex(null)} />}
   </main>
 }
