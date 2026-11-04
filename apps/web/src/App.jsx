@@ -455,6 +455,9 @@ function ProjectPage() {
   if (error && !project) return <main className="section-wrap page-main"><p className="status-message">This project is temporarily unavailable. Please try again soon.</p></main>
   if (!project) return <main className="section-wrap page-main"><p className="status-message">Project not found.</p><Link className="text-link" to="/projects">Back to projects <span>↗</span></Link></main>
   const content = Array.isArray(project.content) ? project.content.filter(Boolean) : []
+  const heroVideoBlock = content.find((block) => block._type === 'block' && getProjectVideoEmbed((block.children || []).map((child) => child.text || '').join(''))?.provider === 'Vimeo')
+  const heroVideo = heroVideoBlock && getProjectVideoEmbed((heroVideoBlock.children || []).map((child) => child.text || '').join(''))
+  const visibleContent = heroVideoBlock ? content.filter((block) => block !== heroVideoBlock) : content
   const galleryImages = [project.cover?.url && { src: imageUrl(project.cover).width(2200).url(), alt: project.cover.alt || project.title }, ...content.flatMap((block) => {
     const candidates = block._type === 'layoutImage' ? [block]
       : ['imageRow', 'imageCarousel'].includes(block._type) ? block.images || []
@@ -471,6 +474,7 @@ function ProjectPage() {
     setLightboxIndex(Math.max(0, imageIndex))
   }
   return <main className="project-detail page-main">
+    {heroVideo && <div className="project-video-hero"><iframe src={heroVideo.src} title={`${project.title} video`} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen fetchPriority="high" /></div>}
     <section className="project-intro section-wrap">
       <p className="eyebrow">{[project.category, project.year, project.location].filter(Boolean).join(' · ')}</p>
       <h1>{project.title}</h1>
@@ -478,9 +482,9 @@ function ProjectPage() {
       {project.previewImage ? <img className="detail-cover" src={project.previewImage} alt={project.title} /> : project.cover?.url && <img className="detail-cover" src={imageUrl(project.cover).width(1800).url()} alt={project.cover.alt || project.title} />}
     </section>
     <section className="story-grid">
-      {content.some((block) => ['projectText', 'projectImage', 'projectDrawing', 'projectVideo'].includes(block?._type))
-        ? content.map((block, index) => <ContentBlock block={block} key={block._key || index} onImageClick={openProjectImage} />)
-        : content.length > 0 && <PortableText value={content} components={createProjectContentComponents(openProjectImage)} />}
+      {visibleContent.some((block) => ['projectText', 'projectImage', 'projectDrawing', 'projectVideo'].includes(block?._type))
+        ? visibleContent.map((block, index) => <ContentBlock block={block} key={block._key || index} onImageClick={openProjectImage} />)
+        : visibleContent.length > 0 && <PortableText value={visibleContent} components={createProjectContentComponents(openProjectImage)} />}
     </section>
     {lightboxIndex !== null && <ProjectImageLightbox images={galleryImages} index={lightboxIndex} onChange={setLightboxIndex} onClose={() => setLightboxIndex(null)} />}
   </main>
@@ -643,7 +647,7 @@ function getProjectVideoEmbed(markdownText = '') {
     if (url.hostname === 'player.vimeo.com' || url.hostname === 'vimeo.com' || url.hostname === 'www.vimeo.com') {
       const videoId = url.pathname.match(url.hostname === 'player.vimeo.com' ? /^\/video\/(\d+)$/ : /^\/(\d+)$/)?.[1]
       if (!videoId) return null
-      const params = new URLSearchParams({ title: '0', byline: '0', portrait: '0', badge: '0' })
+      const params = new URLSearchParams({ background: '1', badge: '0', title: '0', byline: '0', portrait: '0' })
       const privacyHash = url.searchParams.get('h')
       if (privacyHash) params.set('h', privacyHash)
       return { provider: 'Vimeo', src: `https://player.vimeo.com/video/${videoId}?${params}` }
