@@ -86,7 +86,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .info-page .about-page__title { margin: 24px 0; font: 700 clamp(10px, 1.12vw, 18px)/1 'DM Sans', sans-serif; letter-spacing: -.035em; }
 .project-scroll-shell { position: fixed; z-index: 1; inset: 76px 0 0; overflow-y: auto; overscroll-behavior: contain; background: transparent; }
 .project-detail { min-height: 100vh; color: #252622; background: #ffffff; }
-.project-video-hero { position: relative; left: 50%; width: 100vw; height: calc(100svh - 76px); margin: 0 0 52px; overflow: visible; transform: translateX(-50%); background: transparent; }
+.project-video-hero { position: relative; width: 100vw; height: calc(100svh - 76px); margin: 0 0 52px calc(50% - 50vw); overflow: visible; background: transparent; }
 .project-video-hero iframe { position: fixed; z-index: 0; top: calc(50% - var(--project-scroll-offset, 0px)); left: 50%; width: max(100vw, 177.78vh); height: max(100svh, 56.25vw); border: 0; transform: translate(-50%, -50%); }
 .project-error { display: grid; min-height: 70vh; align-content: center; justify-items: center; gap: 16px; padding: 48px 24px; text-align: center; }
 .project-error h1 { margin: 0; font: 400 clamp(24px, 3vw, 42px)/1.2 Helvetica, Arial, sans-serif; }
