@@ -79,20 +79,24 @@ function SiteLayout() {
       <nav aria-label="Main navigation">{!isInfoPage && <Link to="/projects" className={pathname.startsWith('/projects') ? 'is-active-category' : undefined}>Projects</Link>}<Link to="/about">About</Link><Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Home</Link><Link to="/contact">Contact</Link></nav>
       <span className="header-note">Architecture · Interiors</span>
     </header>}
-    <Routes>
-      <Route path="/" element={<HomePage hoveredCategory={hoveredCategory} />} />
-      <Route path="/projects" element={<ProjectsPage routeCategory="Projects" />} />
-      <Route path="/collaborations" element={<ProjectsPage routeCategory="Collaborations" />} />
-      <Route path="/objects" element={<ProjectsPage routeCategory="Objects" />} />
-      <Route path="/explorations" element={<ProjectsPage routeCategory="Explorations" />} />
-      <Route path="/:category/:slug" element={<ProjectPageErrorBoundary key={pathname}><ProjectPage /></ProjectPageErrorBoundary>} />
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="/contact" element={<ContactPage />} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
-    {pathname === '/' ? <HomeFooter /> : <footer className="category-page__footer">
-      <span>© Nazanin Akbari</span>
-    </footer>}
+    {isProjectDetail ? <div className="project-scroll-shell">
+      <Routes>
+        <Route path="/:category/:slug" element={<ProjectPageErrorBoundary key={pathname}><ProjectPage /></ProjectPageErrorBoundary>} />
+      </Routes>
+      <footer className="category-page__footer"><span>© Nazanin Akbari</span></footer>
+    </div> : <>
+      <Routes>
+        <Route path="/" element={<HomePage hoveredCategory={hoveredCategory} />} />
+        <Route path="/projects" element={<ProjectsPage routeCategory="Projects" />} />
+        <Route path="/collaborations" element={<ProjectsPage routeCategory="Collaborations" />} />
+        <Route path="/objects" element={<ProjectsPage routeCategory="Objects" />} />
+        <Route path="/explorations" element={<ProjectsPage routeCategory="Explorations" />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+      {pathname === '/' ? <HomeFooter /> : <footer className="category-page__footer"><span>© Nazanin Akbari</span></footer>}
+    </>}
   </>
 }
 
