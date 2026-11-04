@@ -1,6 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap');
-
-:root { font-family: 'DM Sans', sans-serif; color: #252622; background: #ffffff; font-synthesis: none; text-rendering: optimizeLegibility; }
+:root { font-family: Helvetica, Arial, sans-serif; color: #252622; background: #ffffff; font-synthesis: none; text-rendering: optimizeLegibility; }
 * { box-sizing: border-box; }
 html {
   scroll-behavior: smooth;
@@ -435,4 +433,13 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   .home-category-slide span { font-size: 8px; }
   .experience-actions { gap: 7px; }
   .experience-actions a { font-size: 7px; }
+}
+
+/* Site-wide typography: Helvetica Regular for body copy and Helvetica Bold for titles/emphasis. */
+body :where(*) {
+  font-family: Helvetica, Arial, sans-serif !important;
+  font-weight: 400 !important;
+}
+body :is(h1, h2, h3, h4, h5, h6, strong, b, .wordmark, .home-footer__logo, .footer-title, .home-category-slide span) {
+  font-weight: 700 !important;
 }
