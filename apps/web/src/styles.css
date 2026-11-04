@@ -86,9 +86,9 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .page-main { min-height: 56vh; }
 .page-title { margin: 24px 0; font: 400 clamp(48px, 7vw, 90px)/1 'Playfair Display', serif; letter-spacing: -.05em; }
 .info-page .about-page__title { margin: 24px 0; font: 700 clamp(10px, 1.12vw, 18px)/1 'DM Sans', sans-serif; letter-spacing: -.035em; }
-.project-detail { min-height: 100vh; color: #252622; background: #ffffff; }
-.project-video-hero { position: relative; left: 50%; width: 100vw; height: 100svh; margin: 0 0 52px; overflow: hidden; transform: translateX(-50%); background: #111; }
-.project-video-hero iframe { position: absolute; top: 50%; left: 50%; width: max(100vw, 177.78vh); height: max(100svh, 56.25vw); border: 0; transform: translate(-50%, -50%); }
+.project-detail { position: fixed; z-index: 1; inset: 76px 0 0; overflow-y: auto; overscroll-behavior: contain; min-height: 0; color: #252622; background: #ffffff; }
+.project-video-hero { position: relative; left: 50%; width: 100vw; height: calc(100svh - 76px); margin: 0 0 52px; overflow: hidden; transform: translateX(-50%); background: #111; }
+.project-video-hero iframe { position: absolute; top: 50%; left: 50%; width: max(100vw, 177.78vh); height: max(calc(100svh - 76px), 56.25vw); border: 0; transform: translate(-50%, -50%); }
 .project-error { display: grid; min-height: 70vh; align-content: center; justify-items: center; gap: 16px; padding: 48px 24px; text-align: center; }
 .project-error h1 { margin: 0; font: 400 clamp(24px, 3vw, 42px)/1.2 Helvetica, Arial, sans-serif; }
 .project-error p { margin: 0; color: #696a64; font-size: 14px; }
@@ -268,7 +268,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .experience-brand strong { font-weight: 700; }
 .experience-header--category .experience-brand { display: none; }
 .experience-header--info .experience-nav { display: none; }
-.experience-header--light { color: #252622; text-shadow: none; background: #fff; }
+.experience-header--light { color: #252622; text-shadow: none; background: transparent; }
 .experience-header--light .experience-nav a,
 .experience-header--light .experience-actions a,
 .experience-header--light .experience-brand { color: #252622; }
@@ -417,6 +417,9 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 }
 @media (max-width: 700px) {
   .experience-header { min-height: 66px; padding: 0 16px; }
+  .project-detail { inset-block-start: 66px; }
+  .project-video-hero { height: calc(100svh - 66px); }
+  .project-video-hero iframe { height: max(calc(100svh - 66px), 56.25vw); }
   .experience-nav { gap: 10px; }
   .experience-nav a { font-size: 8px; }
   .experience-nav a:nth-child(n+4) { display: none; }
