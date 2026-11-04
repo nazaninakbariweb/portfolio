@@ -636,36 +636,8 @@ function ProjectVideo({ value }) {
 }
 
 function VimeoProjectHero({ src, title }) {
-  const frameRef = useRef(null)
-  const [muted, setMuted] = useState(true)
-  const [playerSdkReady, setPlayerSdkReady] = useState(Boolean(window.Vimeo?.Player))
-  useEffect(() => {
-    if (window.Vimeo?.Player) { setPlayerSdkReady(true); return undefined }
-    const script = document.querySelector('script[data-vimeo-player-sdk]') || document.createElement('script')
-    const onLoad = () => setPlayerSdkReady(Boolean(window.Vimeo?.Player))
-    script.addEventListener('load', onLoad)
-    if (!script.src) {
-      script.src = 'https://player.vimeo.com/api/player.js'
-      script.async = true
-      script.dataset.vimeoPlayerSdk = 'true'
-      document.head.appendChild(script)
-    }
-    return () => script.removeEventListener('load', onLoad)
-  }, [])
-  const unmute = async () => {
-    if (!window.Vimeo?.Player || !frameRef.current) return
-    try {
-      const player = new window.Vimeo.Player(frameRef.current)
-      await player.setMuted(false)
-      await player.setVolume(1)
-      setMuted(false)
-    } catch (error) {
-      console.error('Could not enable Vimeo audio:', error)
-    }
-  }
   return <div className="project-video-hero">
-    <iframe ref={frameRef} src={src} title={title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen fetchPriority="high" />
-    {muted && playerSdkReady && <button className="project-video-hero__unmute" onClick={unmute} type="button">Unmute</button>}
+    <iframe src={src} title={title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen fetchPriority="high" />
   </div>
 }
 

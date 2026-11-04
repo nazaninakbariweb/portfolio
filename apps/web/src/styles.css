@@ -89,13 +89,12 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .project-detail { min-height: 100vh; color: #252622; background: #ffffff; }
 .project-video-hero { position: relative; left: 50%; width: 100vw; height: 100svh; margin: 0 0 52px; overflow: hidden; transform: translateX(-50%); background: #111; }
 .project-video-hero iframe { position: absolute; top: 50%; left: 50%; width: max(100vw, 177.78vh); height: max(100svh, 56.25vw); border: 0; transform: translate(-50%, -50%); }
-.project-video-hero__unmute { position: absolute; right: 28px; bottom: 26px; z-index: 2; padding: 5px 8px; border: 1px solid rgb(255 255 255 / 46%); background: rgb(0 0 0 / 22%); color: #fff; font: 400 10px/1 Helvetica, Arial, sans-serif; letter-spacing: .04em; cursor: pointer; }
 .project-error { display: grid; min-height: 70vh; align-content: center; justify-items: center; gap: 16px; padding: 48px 24px; text-align: center; }
 .project-error h1 { margin: 0; font: 400 clamp(24px, 3vw, 42px)/1.2 Helvetica, Arial, sans-serif; }
 .project-error p { margin: 0; color: #696a64; font-size: 14px; }
 .project-error button { padding: 10px 16px; border: 1px solid #252622; color: #252622; background: transparent; cursor: pointer; font: inherit; }
-.project-intro { padding-bottom: 42px; }
-.project-intro h1 { margin: 24px 0; font: 400 clamp(48px, 7vw, 90px)/1 'Playfair Display', serif; letter-spacing: -.05em; }
+.project-intro { padding-top: 110px; padding-bottom: 42px; }
+.project-intro h1 { margin: 24px 0; font: 700 clamp(24px, 3.5vw, 45px)/1.1 Helvetica, Arial, sans-serif; letter-spacing: -.035em; }
 .project-summary { max-width: 560px; color: #696a64; font-size: 14px; line-height: 1.8; }
 .detail-cover { display: block; width: calc(100% + 24vw); max-width: none; height: auto; max-height: none; object-fit: contain; margin: 42px -12vw 0; }
 .story-grid { display: grid; grid-template-columns: repeat(12,minmax(0,1fr)); gap: 8px; padding: 0 6vw 100px; align-items: start; }
