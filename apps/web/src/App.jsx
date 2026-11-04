@@ -646,9 +646,25 @@ function ProjectVideo({ value }) {
 }
 
 function VimeoProjectHero({ src, title }) {
+  const lastTouchY = useRef(null)
   return <>
     <div className="project-video-hero" aria-hidden="true" />
-    {createPortal(<div className="project-video-layer"><iframe src={src} title={title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen fetchPriority="high" /></div>, document.body)}
+    {createPortal(<div className="project-video-layer">
+      <iframe src={src} title={title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen fetchPriority="high" />
+      <div className="project-video-scroll-catcher" onWheel={(event) => {
+        const scrollArea = document.querySelector('.project-scroll-shell')
+        if (!scrollArea) return
+        event.preventDefault()
+        scrollArea.scrollTop += event.deltaY
+      }} onTouchStart={(event) => { lastTouchY.current = event.touches[0]?.clientY ?? null }} onTouchMove={(event) => {
+        const scrollArea = document.querySelector('.project-scroll-shell')
+        const nextY = event.touches[0]?.clientY
+        if (!scrollArea || nextY == null || lastTouchY.current == null) return
+        event.preventDefault()
+        scrollArea.scrollTop += lastTouchY.current - nextY
+        lastTouchY.current = nextY
+      }} onTouchEnd={() => { lastTouchY.current = null }} aria-hidden="true" />
+    </div>, document.body)}
   </>
 }
 
