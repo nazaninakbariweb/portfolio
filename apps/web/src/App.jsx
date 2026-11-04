@@ -455,8 +455,9 @@ function ProjectPage() {
   if (error && !project) return <main className="section-wrap page-main"><p className="status-message">This project is temporarily unavailable. Please try again soon.</p></main>
   if (!project) return <main className="section-wrap page-main"><p className="status-message">Project not found.</p><Link className="text-link" to="/projects">Back to projects <span>↗</span></Link></main>
   const content = Array.isArray(project.content) ? project.content.filter(Boolean) : []
-  const heroVideoBlock = content.find((block) => block._type === 'block' && getProjectVideoEmbed((block.children || []).map((child) => child.text || '').join(''))?.provider === 'Vimeo')
-  const heroVideo = heroVideoBlock && getProjectVideoEmbed((heroVideoBlock.children || []).map((child) => child.text || '').join(''))
+  const getBlockText = (block) => block._type === 'block' ? (block.children || []).map((child) => child.text || '').join('') : block.body || block.url || ''
+  const heroVideoBlock = content.find((block) => ['block', 'projectText', 'projectVideo'].includes(block._type) && getProjectVideoEmbed(getBlockText(block))?.provider === 'Vimeo')
+  const heroVideo = heroVideoBlock && getProjectVideoEmbed(getBlockText(heroVideoBlock))
   const visibleContent = heroVideoBlock ? content.filter((block) => block !== heroVideoBlock) : content
   const galleryImages = [project.cover?.url && { src: imageUrl(project.cover).width(2200).url(), alt: project.cover.alt || project.title }, ...content.flatMap((block) => {
     const candidates = block._type === 'layoutImage' ? [block]
@@ -634,10 +635,13 @@ function ProjectVideo({ value }) {
 }
 
 function getProjectVideoEmbed(markdownText = '') {
-  const match = markdownText.match(/<iframe\b[\s\S]*?\bsrc\s*=\s*["'](https?:\/\/[^"']+)["']/i)
-  if (!match) return null
+  const text = String(markdownText).replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '"').replace(/&#39;/gi, "'").replace(/&amp;/gi, '&')
+  const iframeSource = text.match(/<iframe\b[\s\S]*?\bsrc\s*=\s*["'](https?:\/\/[^"']+)["']/i)?.[1]
+  const directSource = text.match(/https?:\/\/(?:player\.)?(?:www\.)?vimeo\.com\/[^\s"'<>]+/i)?.[0]
+  const rawSource = iframeSource || directSource
+  if (!rawSource) return null
   try {
-    const url = new URL(match[1].replace(/&amp;/gi, '&'))
+    const url = new URL(rawSource.replace(/[),.;]+$/, ''))
     const youtubeHosts = new Set(['youtube.com', 'www.youtube.com', 'youtube-nocookie.com', 'www.youtube-nocookie.com'])
     if (youtubeHosts.has(url.hostname)) {
       const videoId = url.pathname.match(/^\/embed\/([\w-]{6,})$/)?.[1]
