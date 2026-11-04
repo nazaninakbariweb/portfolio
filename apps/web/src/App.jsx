@@ -1,5 +1,6 @@
 import { Component, useEffect, useMemo, useRef, useState } from 'react'
 import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { createPortal } from 'react-dom'
 import { PortableText } from '@portabletext/react'
 import { client, imageUrl } from './sanity.js'
 
@@ -70,6 +71,11 @@ function SiteLayout() {
     }
     return () => { if (frame) window.cancelAnimationFrame(frame) }
   }, [pathname, isCategoryPage, isInfoPage, isProjectDetail])
+  useEffect(() => {
+    if (!isProjectDetail) return undefined
+    document.documentElement.style.setProperty('--project-scroll-offset', '0px')
+    return () => document.documentElement.style.removeProperty('--project-scroll-offset')
+  }, [isProjectDetail])
   return <>
     {hasHomeStyleHeader ? <>
       <HomeHeader onCategoryHover={setHoveredCategory} alwaysLight={isCategoryPage || isInfoPage || isProjectDetail} categoryPage={isCategoryPage || isInfoPage || isProjectDetail} infoPage={isInfoPage} />
@@ -79,7 +85,7 @@ function SiteLayout() {
       <nav aria-label="Main navigation">{!isInfoPage && <Link to="/projects" className={pathname.startsWith('/projects') ? 'is-active-category' : undefined}>Projects</Link>}<Link to="/about">About</Link><Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Home</Link><Link to="/contact">Contact</Link></nav>
       <span className="header-note">Architecture · Interiors</span>
     </header>}
-    {isProjectDetail ? <div className="project-scroll-shell" onScroll={(event) => event.currentTarget.style.setProperty('--project-scroll-offset', `${event.currentTarget.scrollTop}px`)}>
+    {isProjectDetail ? <div className="project-scroll-shell" onScroll={(event) => document.documentElement.style.setProperty('--project-scroll-offset', `${event.currentTarget.scrollTop}px`)}>
       <Routes>
         <Route path="/:category/:slug" element={<ProjectPageErrorBoundary key={pathname}><ProjectPage /></ProjectPageErrorBoundary>} />
       </Routes>
@@ -640,9 +646,10 @@ function ProjectVideo({ value }) {
 }
 
 function VimeoProjectHero({ src, title }) {
-  return <div className="project-video-hero">
-    <iframe src={src} title={title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen fetchPriority="high" />
-  </div>
+  return <>
+    <div className="project-video-hero" aria-hidden="true" />
+    {createPortal(<div className="project-video-layer"><iframe src={src} title={title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen fetchPriority="high" /></div>, document.body)}
+  </>
 }
 
 function getProjectVideoEmbed(markdownText = '') {
