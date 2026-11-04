@@ -459,6 +459,7 @@ function ProjectPage() {
   const heroVideoBlock = content.find((block) => ['block', 'projectText', 'projectVideo'].includes(block._type) && getProjectVideoEmbed(getBlockText(block))?.provider === 'Vimeo')
   const heroVideo = heroVideoBlock && getProjectVideoEmbed(getBlockText(heroVideoBlock))
   const visibleContent = heroVideoBlock ? content.filter((block) => block !== heroVideoBlock) : content
+  const compactProjectType = project.summary && project.summary.length <= 60 ? project.summary : ''
   const galleryImages = [project.cover?.url && { src: imageUrl(project.cover).width(2200).url(), alt: project.cover.alt || project.title }, ...content.flatMap((block) => {
     const candidates = block._type === 'layoutImage' ? [block]
       : ['imageRow', 'imageCarousel'].includes(block._type) ? block.images || []
@@ -477,9 +478,9 @@ function ProjectPage() {
   return <main className="project-detail page-main">
     {heroVideo && <div className="project-video-hero"><iframe src={heroVideo.src} title={`${project.title} video`} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen fetchPriority="high" /></div>}
     <section className="project-intro section-wrap">
-      <p className="eyebrow">{[project.category, project.year, project.location].filter(Boolean).join(' · ')}</p>
+      <p className="eyebrow">{[project.category, project.year, project.location, compactProjectType].filter(Boolean).join(' · ')}</p>
       <h1>{project.title}</h1>
-      {project.summary && <p className="project-summary">{project.summary}</p>}
+      {project.summary && !compactProjectType && <p className="project-summary">{project.summary}</p>}
       {project.previewImage ? <img className="detail-cover" src={project.previewImage} alt={project.title} /> : project.cover?.url && <img className="detail-cover" src={imageUrl(project.cover).width(1800).url()} alt={project.cover.alt || project.title} />}
     </section>
     <section className="story-grid">
