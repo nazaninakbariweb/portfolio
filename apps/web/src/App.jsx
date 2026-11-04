@@ -651,7 +651,7 @@ function getProjectVideoEmbed(markdownText = '') {
     if (url.hostname === 'player.vimeo.com' || url.hostname === 'vimeo.com' || url.hostname === 'www.vimeo.com') {
       const videoId = url.pathname.match(url.hostname === 'player.vimeo.com' ? /^\/video\/(\d+)$/ : /^\/(\d+)$/)?.[1]
       if (!videoId) return null
-      const params = new URLSearchParams({ background: '1', badge: '0', title: '0', byline: '0', portrait: '0' })
+      const params = new URLSearchParams({ autoplay: '1', muted: '1', controls: '1', badge: '0', title: '0', byline: '0', portrait: '0' })
       const privacyHash = url.searchParams.get('h')
       if (privacyHash) params.set('h', privacyHash)
       return { provider: 'Vimeo', src: `https://player.vimeo.com/video/${videoId}?${params}` }
