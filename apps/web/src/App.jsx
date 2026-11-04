@@ -476,7 +476,7 @@ function ProjectPage() {
     setLightboxIndex(Math.max(0, imageIndex))
   }
   return <main className="project-detail page-main">
-    {heroVideo && <div className="project-video-hero"><iframe src={heroVideo.src} title={`${project.title} video`} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen fetchPriority="high" /></div>}
+    {heroVideo && <VimeoProjectHero src={heroVideo.src} title={`${project.title} video`} />}
     <section className="project-intro section-wrap">
       <p className="eyebrow">{[project.category, project.year, project.location, compactProjectType].filter(Boolean).join(' · ')}</p>
       <h1>{project.title}</h1>
@@ -635,6 +635,40 @@ function ProjectVideo({ value }) {
   </figure>
 }
 
+function VimeoProjectHero({ src, title }) {
+  const frameRef = useRef(null)
+  const [muted, setMuted] = useState(true)
+  const [playerSdkReady, setPlayerSdkReady] = useState(Boolean(window.Vimeo?.Player))
+  useEffect(() => {
+    if (window.Vimeo?.Player) { setPlayerSdkReady(true); return undefined }
+    const script = document.querySelector('script[data-vimeo-player-sdk]') || document.createElement('script')
+    const onLoad = () => setPlayerSdkReady(Boolean(window.Vimeo?.Player))
+    script.addEventListener('load', onLoad)
+    if (!script.src) {
+      script.src = 'https://player.vimeo.com/api/player.js'
+      script.async = true
+      script.dataset.vimeoPlayerSdk = 'true'
+      document.head.appendChild(script)
+    }
+    return () => script.removeEventListener('load', onLoad)
+  }, [])
+  const unmute = async () => {
+    if (!window.Vimeo?.Player || !frameRef.current) return
+    try {
+      const player = new window.Vimeo.Player(frameRef.current)
+      await player.setMuted(false)
+      await player.setVolume(1)
+      setMuted(false)
+    } catch (error) {
+      console.error('Could not enable Vimeo audio:', error)
+    }
+  }
+  return <div className="project-video-hero">
+    <iframe ref={frameRef} src={src} title={title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen fetchPriority="high" />
+    {muted && playerSdkReady && <button className="project-video-hero__unmute" onClick={unmute} type="button">Unmute</button>}
+  </div>
+}
+
 function getProjectVideoEmbed(markdownText = '') {
   const text = String(markdownText).replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '"').replace(/&#39;/gi, "'").replace(/&amp;/gi, '&')
   const iframeSource = text.match(/<iframe\b[\s\S]*?\bsrc\s*=\s*["'](https?:\/\/[^"']+)["']/i)?.[1]
@@ -652,7 +686,7 @@ function getProjectVideoEmbed(markdownText = '') {
     if (url.hostname === 'player.vimeo.com' || url.hostname === 'vimeo.com' || url.hostname === 'www.vimeo.com') {
       const videoId = url.pathname.match(url.hostname === 'player.vimeo.com' ? /^\/video\/(\d+)$/ : /^\/(\d+)$/)?.[1]
       if (!videoId) return null
-      const params = new URLSearchParams({ autoplay: '1', muted: '1', controls: '1', progress_bar: '1', quality: '1080p', vimeo_logo: '0', badge: '0', title: '0', byline: '0', portrait: '0' })
+      const params = new URLSearchParams({ autoplay: '1', muted: '1', unmute_button: '0', controls: '1', progress_bar: '1', quality: '1080p', quality_selector: '0', vimeo_logo: '0', badge: '0', title: '0', byline: '0', portrait: '0' })
       const privacyHash = url.searchParams.get('h')
       if (privacyHash) params.set('h', privacyHash)
       return { provider: 'Vimeo', src: `https://player.vimeo.com/video/${videoId}?${params}` }
