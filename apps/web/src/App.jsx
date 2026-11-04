@@ -79,7 +79,7 @@ function SiteLayout() {
       <nav aria-label="Main navigation">{!isInfoPage && <Link to="/projects" className={pathname.startsWith('/projects') ? 'is-active-category' : undefined}>Projects</Link>}<Link to="/about">About</Link><Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Home</Link><Link to="/contact">Contact</Link></nav>
       <span className="header-note">Architecture · Interiors</span>
     </header>}
-    {isProjectDetail ? <div className="project-scroll-shell">
+    {isProjectDetail ? <div className="project-scroll-shell" onScroll={(event) => event.currentTarget.style.setProperty('--project-scroll-offset', `${event.currentTarget.scrollTop}px`)}>
       <Routes>
         <Route path="/:category/:slug" element={<ProjectPageErrorBoundary key={pathname}><ProjectPage /></ProjectPageErrorBoundary>} />
       </Routes>
