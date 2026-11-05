@@ -119,7 +119,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .story-text h2 { font-size: 30px; margin-bottom: 16px; }
 .story-text p { white-space: pre-line; color: #4a4a46; font-size: 13px; line-height: 1.46; }
 .story-portable-text, .story-portable-heading, .story-portable-subheading, .story-portable-quote { grid-column: 1 / -1; width: min(100%, 1200px); margin: 0 auto; }
-.story-portable-text { margin: 0 0 1em; color: #4a4a46; font: 400 14px/1.46 Helvetica, Arial, sans-serif; white-space: pre-line; }
+.story-portable-text { margin: 0 0 .7em; color: #4a4a46; font: 400 14px/1.46 Helvetica, Arial, sans-serif; white-space: pre-line; }
 .story-portable-text:last-child { margin-bottom: 0; }
 .story-portable-heading { font: 400 30px/.95 'Playfair Display', serif; }
 .story-portable-subheading { font: 400 20px/1.07 Helvetica, Arial, sans-serif; }
