@@ -142,6 +142,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .story-image-carousel__arrow { position: absolute; top: calc(min(78vh, 780px) / 2); z-index: 1; display: grid; width: 40px; height: 40px; place-items: center; padding: 0; border: 0; border-radius: 50%; background: rgb(255 255 255 / 82%); color: #292a27; font: 20px/1 Helvetica, Arial, sans-serif; cursor: pointer; transform: translateY(-50%); }
 .story-image-carousel__arrow--left { left: 16px; }
 .story-image-carousel__arrow--right { right: 16px; }
+.story-image-carousel__arrow[aria-disabled="true"] { opacity: .42; cursor: default; }
 .project-image-trigger { display: block; width: 100%; margin: 0; padding: 0; border: 0; background: transparent; cursor: zoom-in; }
 .project-image-trigger img { display: block; width: 100%; height: auto; }
 .story-image-carousel__track .project-image-trigger { width: max-content; }

@@ -647,8 +647,8 @@ function ProjectImageCarousel({ value, onImageClick }) {
         </figure>
       })}
     </div>
-    {canScrollLeft && <button className="story-image-carousel__arrow story-image-carousel__arrow--left" type="button" aria-label="Show previous images" onClick={() => move(-1)}>←</button>}
-    {canScrollRight && <button className="story-image-carousel__arrow story-image-carousel__arrow--right" type="button" aria-label="Show next images" onClick={() => move(1)}>→</button>}
+    <button className="story-image-carousel__arrow story-image-carousel__arrow--left" type="button" aria-label="Show previous images" aria-disabled={!canScrollLeft} onClick={() => canScrollLeft && move(-1)}>←</button>
+    <button className="story-image-carousel__arrow story-image-carousel__arrow--right" type="button" aria-label="Show next images" aria-disabled={!canScrollRight} onClick={() => canScrollRight && move(1)}>→</button>
     {images.length > 1 && <nav className="story-image-carousel__pagination" aria-label="Choose carousel image">{images.map((image, index) => <button key={image._key || index} type="button" className={index === activeImage ? 'is-active' : undefined} aria-label={`Show image ${index + 1}`} aria-current={index === activeImage ? 'true' : undefined} onClick={() => goToImage(index)} />)}</nav>}
   </div>
 }
