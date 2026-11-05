@@ -3,9 +3,10 @@
 html {
   scroll-behavior: smooth;
   scrollbar-width: none;
+  overflow-x: clip;
 }
 html::-webkit-scrollbar { display: none; }
-body { margin: 0; min-width: 320px; line-height: .92; }
+body { margin: 0; min-width: 320px; line-height: .92; overflow-x: clip; }
 a { color: inherit; text-decoration: none; }
 .site-header { height: 78px; padding: 0 6.2vw; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #dcdad3; }
 .site-header nav { font-family: Helvetica, Arial, sans-serif; font-weight: 400; }
@@ -85,10 +86,11 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .page-main { min-height: 56vh; }
 .page-title { margin: 24px 0; font: 400 clamp(48px, 7vw, 90px)/.77 'Playfair Display', serif; letter-spacing: -.05em; }
 .info-page .about-page__title { margin: 24px 0; font: 700 clamp(10px, 1.12vw, 18px)/.77 'DM Sans', sans-serif; letter-spacing: -.035em; }
-.project-scroll-shell { position: fixed; z-index: 0; inset: 76px 0 0; overflow-y: auto; overscroll-behavior: contain; background: transparent; }
+.project-scroll-shell { position: fixed; z-index: 0; inset: 76px 0 0; overflow-y: auto; overflow-x: clip; scrollbar-width: none; overscroll-behavior: contain; background: transparent; }
+.project-scroll-shell::-webkit-scrollbar { display: none; }
 .project-detail { min-height: 100vh; color: #252622; background: transparent; }
-.project-video-hero { position: relative; width: 100vw; height: 56.25vw; margin: 0 0 52px calc(50% - 50vw); overflow: visible; background: transparent; }
-.project-video-layer { position: fixed; z-index: 1; top: calc(0px - var(--project-scroll-offset, 0px)); left: 0; width: 100vw; height: 56.25vw; overflow: hidden; pointer-events: none; background: #111; }
+.project-video-hero { position: relative; width: 100%; height: 56.25vw; margin: 0 0 52px; overflow: visible; background: transparent; }
+.project-video-layer { position: fixed; z-index: 1; top: calc(0px - var(--project-scroll-offset, 0px)); left: 0; width: 100%; height: 56.25vw; overflow: hidden; pointer-events: none; background: #111; }
 .project-video-layer iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: auto; }
 .project-video-scroll-catcher { position: absolute; z-index: 1; inset: 0 0 108px; pointer-events: auto; touch-action: pan-y; }
 .project-intro, .story-grid { position: relative; background: #ffffff; }
