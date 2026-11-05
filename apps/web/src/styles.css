@@ -98,7 +98,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .project-error h1 { margin: 0; font: 400 clamp(24px, 3vw, 42px)/.92 Helvetica, Arial, sans-serif; }
 .project-error p { margin: 0; color: #4a4a46; font-size: 14px; }
 .project-error button { padding: 10px 16px; border: 1px solid #252622; color: #252622; background: transparent; cursor: pointer; font: inherit; }
-.project-intro { padding-top: 110px; padding-bottom: 42px; }
+.project-intro { padding: 110px 12vw 42px calc(21.25vw + 3px); }
 .project-intro h1 { margin: 24px 0; font: 700 clamp(24px, 3.5vw, 45px)/.85 Helvetica, Arial, sans-serif; letter-spacing: -.035em; }
 .project-intro .eyebrow { color: #50514c; }
 .project-summary { max-width: 560px; color: #4a4a46; font-size: 14px; line-height: 1.38; }
@@ -432,6 +432,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   .experience-header { min-height: 66px; padding: 0 16px; }
   .project-description { padding: 0 6vw; }
   .project-scroll-shell { inset-block-start: 0; }
+  .project-intro { padding: 90px 6vw 32px; }
   .project-video-hero { height: 56.25vw; }
   .project-video-hero iframe { height: 100%; }
   .experience-nav { gap: 10px; }
