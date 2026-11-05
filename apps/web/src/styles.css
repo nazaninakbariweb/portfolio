@@ -140,8 +140,10 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .story-image-carousel__pagination button { width: 9px; height: 3px; padding: 0; border: 0; border-radius: 2px; background: #c9c9c6; cursor: pointer; transition: width 180ms ease, background-color 180ms ease; }
 .story-image-carousel__pagination button.is-active { width: 20px; background: #242522; }
 .story-image-carousel__arrow { position: absolute; top: calc(min(78vh, 780px) / 2); z-index: 1; display: grid; width: 40px; height: 40px; place-items: center; padding: 0; border: 0; border-radius: 50%; background: rgb(255 255 255 / 82%); color: #292a27; font: 20px/1 Helvetica, Arial, sans-serif; cursor: pointer; transform: translateY(-50%); }
-.story-image-carousel__arrow--left { left: 16px; }
-.story-image-carousel__arrow--right { right: 16px; }
+.story-image-carousel__arrow--left { left: clamp(28px, 3vw, 56px); }
+.story-image-carousel__arrow--right { right: clamp(28px, 3vw, 56px); }
+.story-image-carousel:not(.story-image-carousel--seen) .story-image-carousel__arrow { animation: carousel-arrow-hint 1.8s ease-in-out infinite; }
+@keyframes carousel-arrow-hint { 0%, 100% { opacity: .55; transform: translateY(-50%) scale(.96); } 50% { opacity: 1; transform: translateY(-50%) scale(1.04); } }
 .story-image-carousel__arrow[aria-disabled="true"] { opacity: .42; cursor: default; }
 .project-image-trigger { display: block; width: 100%; margin: 0; padding: 0; border: 0; background: transparent; cursor: zoom-in; }
 .project-image-trigger img { display: block; width: 100%; height: auto; }
@@ -429,6 +431,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   to { opacity: 1; transform: scale(1); }
 }
 @media (prefers-reduced-motion: reduce) {
+  .story-image-carousel__arrow { animation: none !important; }
   .home-hero__image { animation: none; }
   .home-category-slide span { transition: none; }
   .experience-nav a,

@@ -604,6 +604,7 @@ function ProjectImageCarousel({ value, onImageClick }) {
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(false)
   const [activeImage, setActiveImage] = useState(0)
+  const [hasSlid, setHasSlid] = useState(false)
 
   useEffect(() => {
     const track = trackRef.current
@@ -611,6 +612,7 @@ function ProjectImageCarousel({ value, onImageClick }) {
     const updateArrows = () => {
       setCanScrollLeft(track.scrollLeft > 2)
       setCanScrollRight(track.scrollLeft + track.clientWidth < track.scrollWidth - 2)
+      if (track.scrollLeft > 2) setHasSlid(true)
       const figures = Array.from(track.children)
       const nearest = figures.reduce((best, figure, index) => Math.abs(figure.offsetLeft - track.scrollLeft) < Math.abs(figures[best].offsetLeft - track.scrollLeft) ? index : best, 0)
       setActiveImage(nearest)
@@ -636,7 +638,7 @@ function ProjectImageCarousel({ value, onImageClick }) {
     if (track && figure) track.scrollTo({ left: figure.offsetLeft, behavior: 'smooth' })
   }
 
-  return <div className="story-image-carousel">
+  return <div className={`story-image-carousel${hasSlid ? ' story-image-carousel--seen' : ''}`}>
     <div className="story-image-carousel__track" ref={trackRef}>
       {images.map((image, index) => {
         const src = image.imageUrl || safeImageUrl(image, 1800)
