@@ -503,9 +503,6 @@ function ProjectPage() {
       {project.summary && !compactProjectType && <p className="project-summary">{project.summary}</p>}
     </section>
     {introductoryContent.length > 0 && <section className="story-grid project-description">{renderProjectContent(introductoryContent)}</section>}
-    {(project.previewImage || project.cover?.url) && <section className="project-cover-wrap">
-      <img className="detail-cover" src={project.previewImage || imageUrl(project.cover).width(1800).url()} alt={project.cover?.alt || project.title} />
-    </section>}
     {remainingContent.length > 0 && <section className="story-grid">{renderProjectContent(remainingContent)}</section>}
     {lightboxIndex !== null && <ProjectImageLightbox images={galleryImages} index={lightboxIndex} onChange={setLightboxIndex} onClose={() => setLightboxIndex(null)} />}
   </main>
