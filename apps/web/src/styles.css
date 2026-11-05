@@ -105,6 +105,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .detail-cover { display: block; width: calc(100% + 24vw); max-width: none; height: auto; max-height: none; object-fit: contain; margin: 42px -12vw 0; }
 .story-grid { display: grid; grid-template-columns: repeat(12,minmax(0,1fr)); gap: 8px; padding: 0 6vw 100px; align-items: start; }
 .project-description { padding: 0 12vw 0 calc(21.25vw + 8px); }
+.story-grid:not(.project-description) { padding-right: 12vw; padding-left: calc(21.25vw + 8px); }
 .project-description .story-portable-text,
 .project-description .story-portable-heading,
 .project-description .story-portable-subheading,
@@ -432,6 +433,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 @media (max-width: 700px) {
   .experience-header { min-height: 66px; padding: 0 16px; }
   .project-description { padding: 0 6vw; }
+  .story-grid:not(.project-description) { padding-right: 6vw; padding-left: 6vw; }
   .project-scroll-shell { inset-block-start: 0; }
   .project-intro { padding: 90px 6vw 32px; }
   .project-video-hero { height: 56.25vw; }
