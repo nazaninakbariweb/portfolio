@@ -130,7 +130,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .story-portable-image figcaption, .story-image-row figcaption, .story-portable-video figcaption { margin-top: 10px; color: #53534e; font-size: 10px; text-align: center; }
 .story-grid .story-image-row { grid-column: 1 / -1; position: relative; display: flex; flex-direction: row; align-items: flex-start; gap: 8px; width: 100vw; max-width: none; margin: 0 0 0 calc(-21.25vw - 8px); }
 .story-grid .story-image-row figure { min-width: 0; margin: 0; }
-.story-image-carousel { grid-column: 1 / -1; position: relative; width: 100vw; margin: 0 0 0 calc(-21.25vw - 8px); }
+.story-image-carousel { grid-column: 1 / -1; position: relative; flex: 0 0 100vw; justify-self: start; width: 100vw; min-width: 100vw; max-width: 100vw; margin: 0 0 0 calc(-21.25vw - 8px); padding: 0; }
 .story-image-carousel__track { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; overscroll-behavior-inline: contain; }
 .story-image-carousel__track::-webkit-scrollbar { display: none; }
 .story-image-carousel__track figure { flex: 0 0 auto; width: max-content; min-width: 0; margin: 0; scroll-snap-align: start; }
