@@ -98,13 +98,13 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .project-error h1 { margin: 0; font: 400 clamp(24px, 3vw, 42px)/.92 Helvetica, Arial, sans-serif; }
 .project-error p { margin: 0; color: #4a4a46; font-size: 14px; }
 .project-error button { padding: 10px 16px; border: 1px solid #252622; color: #252622; background: transparent; cursor: pointer; font: inherit; }
-.project-intro { padding: 110px 12vw 42px calc(21.25vw + 3px); }
+.project-intro { padding: 110px 12vw 42px calc(21.25vw + 8px); }
 .project-intro h1 { margin: 24px 0; font: 700 clamp(24px, 3.5vw, 45px)/.85 Helvetica, Arial, sans-serif; letter-spacing: -.035em; }
 .project-intro .eyebrow { color: #50514c; }
 .project-summary { max-width: 560px; color: #4a4a46; font-size: 14px; line-height: 1.38; }
 .detail-cover { display: block; width: calc(100% + 24vw); max-width: none; height: auto; max-height: none; object-fit: contain; margin: 42px -12vw 0; }
 .story-grid { display: grid; grid-template-columns: repeat(12,minmax(0,1fr)); gap: 8px; padding: 0 6vw 100px; align-items: start; }
-.project-description { padding: 0 12vw 0 21.25vw; }
+.project-description { padding: 0 12vw 0 calc(21.25vw + 8px); }
 .project-description .story-portable-text,
 .project-description .story-portable-heading,
 .project-description .story-portable-subheading,
@@ -118,7 +118,8 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .story-text h2 { font-size: 30px; margin-bottom: 16px; }
 .story-text p { white-space: pre-line; color: #4a4a46; font-size: 13px; line-height: 1.46; }
 .story-portable-text, .story-portable-heading, .story-portable-subheading, .story-portable-quote { grid-column: 1 / -1; width: min(100%, 1200px); margin: 0 auto; }
-.story-portable-text { color: #4a4a46; font: 400 14px/1.46 Helvetica, Arial, sans-serif; white-space: pre-line; }
+.story-portable-text { margin: 0 0 1em; color: #4a4a46; font: 400 14px/1.46 Helvetica, Arial, sans-serif; white-space: pre-line; }
+.story-portable-text:last-child { margin-bottom: 0; }
 .story-portable-heading { font: 400 30px/.95 'Playfair Display', serif; }
 .story-portable-subheading { font: 400 20px/1.07 Helvetica, Arial, sans-serif; }
 .story-portable-quote { border-left: 1px solid #c9c6bd; padding: 8px 20px; color: #4a4a46; font: 400 16px/1.38 'Playfair Display', serif; }
