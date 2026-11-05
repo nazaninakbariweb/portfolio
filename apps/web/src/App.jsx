@@ -603,6 +603,7 @@ function ProjectImageCarousel({ value, onImageClick }) {
   const trackRef = useRef(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(false)
+  const [activeImage, setActiveImage] = useState(0)
 
   useEffect(() => {
     const track = trackRef.current
@@ -610,6 +611,9 @@ function ProjectImageCarousel({ value, onImageClick }) {
     const updateArrows = () => {
       setCanScrollLeft(track.scrollLeft > 2)
       setCanScrollRight(track.scrollLeft + track.clientWidth < track.scrollWidth - 2)
+      const figures = Array.from(track.children)
+      const nearest = figures.reduce((best, figure, index) => Math.abs(figure.offsetLeft - track.scrollLeft) < Math.abs(figures[best].offsetLeft - track.scrollLeft) ? index : best, 0)
+      setActiveImage(nearest)
     }
     updateArrows()
     track.addEventListener('scroll', updateArrows, { passive: true })
@@ -626,6 +630,11 @@ function ProjectImageCarousel({ value, onImageClick }) {
     const track = trackRef.current
     if (track) track.scrollBy({ left: direction * track.clientWidth * 0.8, behavior: 'smooth' })
   }
+  const goToImage = (index) => {
+    const track = trackRef.current
+    const figure = track?.children[index]
+    if (track && figure) track.scrollTo({ left: figure.offsetLeft, behavior: 'smooth' })
+  }
 
   return <div className="story-image-carousel">
     <div className="story-image-carousel__track" ref={trackRef}>
@@ -640,6 +649,7 @@ function ProjectImageCarousel({ value, onImageClick }) {
     </div>
     {canScrollLeft && <button className="story-image-carousel__arrow story-image-carousel__arrow--left" type="button" aria-label="Show previous images" onClick={() => move(-1)}>←</button>}
     {canScrollRight && <button className="story-image-carousel__arrow story-image-carousel__arrow--right" type="button" aria-label="Show next images" onClick={() => move(1)}>→</button>}
+    {images.length > 1 && <nav className="story-image-carousel__pagination" aria-label="Choose carousel image">{images.map((image, index) => <button key={image._key || index} type="button" className={index === activeImage ? 'is-active' : undefined} aria-label={`Show image ${index + 1}`} aria-current={index === activeImage ? 'true' : undefined} onClick={() => goToImage(index)} />)}</nav>}
   </div>
 }
 

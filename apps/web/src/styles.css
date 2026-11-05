@@ -136,6 +136,9 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .story-image-carousel__track figure { flex: 0 0 auto; width: max-content; min-width: 0; margin: 0; scroll-snap-align: start; }
 .story-image-carousel__track img { display: block; width: auto; max-width: none; height: min(78vh, 780px); object-fit: contain; }
 .story-image-carousel__track figcaption { margin-top: 10px; color: #53534e; font-size: 10px; text-align: center; }
+.story-image-carousel__pagination { display: flex; justify-content: center; align-items: center; gap: 5px; padding: 12px 0 0; }
+.story-image-carousel__pagination button { width: 9px; height: 3px; padding: 0; border: 0; border-radius: 2px; background: #c9c9c6; cursor: pointer; transition: width 180ms ease, background-color 180ms ease; }
+.story-image-carousel__pagination button.is-active { width: 20px; background: #242522; }
 .story-image-carousel__arrow { position: absolute; top: calc(min(78vh, 780px) / 2); z-index: 1; display: grid; width: 40px; height: 40px; place-items: center; padding: 0; border: 0; border-radius: 50%; background: rgb(255 255 255 / 82%); color: #292a27; font: 20px/1 Helvetica, Arial, sans-serif; cursor: pointer; transform: translateY(-50%); }
 .story-image-carousel__arrow--left { left: 16px; }
 .story-image-carousel__arrow--right { right: 16px; }
