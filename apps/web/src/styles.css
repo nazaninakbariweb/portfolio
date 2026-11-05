@@ -87,8 +87,8 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .info-page .about-page__title { margin: 24px 0; font: 700 clamp(10px, 1.12vw, 18px)/.77 'DM Sans', sans-serif; letter-spacing: -.035em; }
 .project-scroll-shell { position: fixed; z-index: 0; inset: 76px 0 0; overflow-y: auto; overscroll-behavior: contain; background: transparent; }
 .project-detail { min-height: 100vh; color: #252622; background: transparent; }
-.project-video-hero { position: relative; width: 100vw; height: calc(100svh - 76px); margin: 0 0 52px calc(50% - 50vw); overflow: visible; background: transparent; }
-.project-video-layer { position: fixed; z-index: 1; top: calc(0px - var(--project-scroll-offset, 0px)); left: 0; width: 100vw; height: 100svh; overflow: hidden; pointer-events: none; background: #111; }
+.project-video-hero { position: relative; width: 100vw; height: 56.25vw; margin: 0 0 52px calc(50% - 50vw); overflow: visible; background: transparent; }
+.project-video-layer { position: fixed; z-index: 1; top: calc(0px - var(--project-scroll-offset, 0px)); left: 0; width: 100vw; height: 56.25vw; overflow: hidden; pointer-events: none; background: #111; }
 .project-video-layer iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: auto; }
 .project-video-scroll-catcher { position: absolute; z-index: 1; inset: 0 0 108px; pointer-events: auto; touch-action: pan-y; }
 .project-intro, .story-grid { position: relative; background: #ffffff; }
@@ -428,7 +428,7 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 @media (max-width: 700px) {
   .experience-header { min-height: 66px; padding: 0 16px; }
   .project-scroll-shell { inset-block-start: 66px; }
-  .project-video-hero { height: calc(100svh - 66px); }
+  .project-video-hero { height: 56.25vw; }
   .project-video-hero iframe { height: 100%; }
   .experience-nav { gap: 10px; }
   .experience-nav a { font-size: 8px; }
