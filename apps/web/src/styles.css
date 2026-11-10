@@ -103,6 +103,9 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 }
 .about-page__image-placeholder span { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
 .about-page__biography { max-width: 520px; margin: 24px 0 0; color: #555650; font: 400 16px/1.55 Helvetica, Arial, sans-serif; }
+.about-page__biography p { margin: 0 0 1em; }
+.about-page__biography p:last-child { margin-bottom: 0; }
+.about-page__portrait { display: block; object-fit: cover; }
 .info-page .about-copy,
 .info-page .about-copy,
 .info-page .status-message { font: 400 clamp(10px, 1.12vw, 18px)/1.15 Helvetica, Arial, sans-serif; letter-spacing: normal; }

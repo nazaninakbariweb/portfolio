@@ -779,14 +779,20 @@ function AboutPage() {
     name, intro, biography, portrait{..., "url": asset->url}
   }`)
   const about = aboutDocuments[0]
+  const intro = about?.intro?.trim() || 'Nazanin Akbari is an architect and interior designer working across architecture, interior design, and collectible furniture.'
+  const biography = about?.biography?.trim() || [
+    'Her practice explores the relationship between space, material, form, and human experience, with an emphasis on materiality, proportion, and composition.',
+    'Working across different scales of design, from architectural spaces to furniture and objects, her approach is guided by an interest in the inherent qualities of materials and their potential to inform form, function, and spatial expression.',
+    'Her work brings together architectural thinking and object design, encompassing independent projects as well as collaborative work with designers, architects, and creative practices. Through these exchanges, she seeks to explore different perspectives and approaches to design.',
+  ].join('\n\n')
   return <main className="page-main info-page about-page">
     <div className="about-page__copy">
       <p className="eyebrow">About</p>
       <h1 className="page-title about-page__title">{about?.name || 'Nazanin Akbari'}</h1>
-      <p className="about-copy">{about?.intro || 'Architect and interior designer working across thoughtful spaces, material, and light.'}</p>
-      {about?.biography && <p className="about-page__biography">{about.biography}</p>}
+      <p className="about-copy">{intro}</p>
+      <div className="about-page__biography">{biography.split(/\n\s*\n/).map((paragraph, index) => <p key={index}>{paragraph}</p>)}</div>
     </div>
-    {about?.portrait ? <img className="about-page__portrait" src={imageUrl(about.portrait).width(1400).fit('crop').url()} alt={about.portrait.alt || about.name || 'Nazanin Akbari'} /> : <div className="about-page__image-placeholder" role="img" aria-label="Portrait image placeholder"><span>Portrait</span></div>}
+    {about?.portrait ? <img className="about-page__portrait" src={imageUrl(about.portrait).width(1400).fit('crop').url()} alt={about.portrait.alt || about.name || 'Nazanin Akbari'} /> : <img className="about-page__portrait" src="/about-portrait.jpg" alt="Nazanin Akbari" />}
   </main>
 }
 
