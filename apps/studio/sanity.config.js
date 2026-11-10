@@ -2,6 +2,7 @@ import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
 import { projectSchemaTypes } from './schemaTypes/project.js'
 import { homepageSettings } from './schemaTypes/homepageSettings.js'
+import { aboutSettings } from './schemaTypes/aboutSettings.js'
 
 export default defineConfig({
   name: 'default',
@@ -14,11 +15,15 @@ export default defineConfig({
         .title('Homepage media')
         .id('homepageSettings')
         .child(S.document().schemaType('homepageSettings').documentId('homepageSettings').title('Homepage media')),
+      S.listItem()
+        .title('About page')
+        .id('aboutSettings')
+        .child(S.document().schemaType('aboutSettings').documentId('aboutSettings').title('About page')),
       S.divider(),
       S.documentTypeListItem('project').title('Projects'),
     ]),
   })],
   schema: {
-    types: [...projectSchemaTypes, homepageSettings],
+    types: [...projectSchemaTypes, homepageSettings, aboutSettings],
   },
 })

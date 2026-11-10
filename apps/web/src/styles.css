@@ -89,10 +89,13 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   padding: 76px 12vw;
 }
 .about-page__copy { max-width: 620px; }
-.about-page__image-placeholder {
+.about-page__image-placeholder,
+.about-page__portrait {
   width: 100%;
   aspect-ratio: 4 / 5;
   max-height: 72vh;
+}
+.about-page__image-placeholder {
   display: grid;
   place-items: center;
   color: #77776f;
@@ -227,7 +230,8 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .footer-meta { margin-top: 100px; border-top: 1px solid #d0cdc5; padding-top: 17px; display: flex; justify-content: space-between; color: #73736c; font-size: 9px; }
 @media (max-width: 700px) {
   .about-page { grid-template-columns: 1fr; gap: 34px; min-height: auto; padding: 84px 7vw 64px; }
-  .about-page__image-placeholder { max-height: none; aspect-ratio: 4 / 5; }
+  .about-page__image-placeholder,
+  .about-page__portrait { max-height: none; aspect-ratio: 4 / 5; }
   .about-page__biography { font-size: 14px; }
   .site-header { height: 66px; padding: 0 6vw; }
   nav { gap: 16px; font-size: 10px; }

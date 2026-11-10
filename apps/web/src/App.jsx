@@ -775,14 +775,18 @@ function ProjectImageLightbox({ images, index, onChange, onClose }) {
 }
 
 function AboutPage() {
+  const { projects: aboutDocuments } = useProjects(`*[_type == "aboutSettings" && _id == "aboutSettings"][0]{
+    name, intro, biography, portrait{..., "url": asset->url}
+  }`)
+  const about = aboutDocuments[0]
   return <main className="page-main info-page about-page">
     <div className="about-page__copy">
       <p className="eyebrow">About</p>
-      <h1 className="page-title about-page__title">Nazanin Akbari</h1>
-      <p className="about-copy">Architect and interior designer working across thoughtful spaces, material, and light.</p>
-      <p className="about-page__biography">A fuller biography will be added here.</p>
+      <h1 className="page-title about-page__title">{about?.name || 'Nazanin Akbari'}</h1>
+      <p className="about-copy">{about?.intro || 'Architect and interior designer working across thoughtful spaces, material, and light.'}</p>
+      {about?.biography && <p className="about-page__biography">{about.biography}</p>}
     </div>
-    <div className="about-page__image-placeholder" role="img" aria-label="Portrait image placeholder"><span>Portrait</span></div>
+    {about?.portrait ? <img className="about-page__portrait" src={imageUrl(about.portrait).width(1400).fit('crop').url()} alt={about.portrait.alt || about.name || 'Nazanin Akbari'} /> : <div className="about-page__image-placeholder" role="img" aria-label="Portrait image placeholder"><span>Portrait</span></div>}
   </main>
 }
 
