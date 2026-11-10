@@ -775,7 +775,15 @@ function ProjectImageLightbox({ images, index, onChange, onClose }) {
 }
 
 function AboutPage() {
-  return <main className="section-wrap page-main info-page"><p className="eyebrow">About</p><h1 className="page-title about-page__title">Nazanin Akbari</h1><p className="about-copy">Architect and interior designer working across thoughtful spaces, material, and light.</p><p className="status-message">A fuller biography will be added here.</p></main>
+  return <main className="page-main info-page about-page">
+    <div className="about-page__copy">
+      <p className="eyebrow">About</p>
+      <h1 className="page-title about-page__title">Nazanin Akbari</h1>
+      <p className="about-copy">Architect and interior designer working across thoughtful spaces, material, and light.</p>
+      <p className="about-page__biography">A fuller biography will be added here.</p>
+    </div>
+    <div className="about-page__image-placeholder" role="img" aria-label="Portrait image placeholder"><span>Portrait</span></div>
+  </main>
 }
 
 function ContactPage() {

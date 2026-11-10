@@ -80,6 +80,26 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
   font-size: 9px;
 }
 .info-page { color: #252622; background: #ffffff; }
+.about-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, .92fr);
+  align-items: center;
+  gap: clamp(36px, 8vw, 120px);
+  min-height: calc(100vh - 78px);
+  padding: 76px 12vw;
+}
+.about-page__copy { max-width: 620px; }
+.about-page__image-placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  max-height: 72vh;
+  display: grid;
+  place-items: center;
+  color: #77776f;
+  background: linear-gradient(145deg, #e7e4de, #d4d0c8 52%, #bcb7ac);
+}
+.about-page__image-placeholder span { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+.about-page__biography { max-width: 520px; margin: 24px 0 0; color: #555650; font: 400 16px/1.55 Helvetica, Arial, sans-serif; }
 .info-page .about-copy,
 .info-page .about-copy,
 .info-page .status-message { font: 400 clamp(10px, 1.12vw, 18px)/1.15 Helvetica, Arial, sans-serif; letter-spacing: normal; }
@@ -206,6 +226,9 @@ h2 { margin: 0; font: 400 54px 'Playfair Display', serif; letter-spacing: -.04em
 .footer-title span { font: 400 25px 'DM Sans',sans-serif; vertical-align: top; }
 .footer-meta { margin-top: 100px; border-top: 1px solid #d0cdc5; padding-top: 17px; display: flex; justify-content: space-between; color: #73736c; font-size: 9px; }
 @media (max-width: 700px) {
+  .about-page { grid-template-columns: 1fr; gap: 34px; min-height: auto; padding: 84px 7vw 64px; }
+  .about-page__image-placeholder { max-height: none; aspect-ratio: 4 / 5; }
+  .about-page__biography { font-size: 14px; }
   .site-header { height: 66px; padding: 0 6vw; }
   nav { gap: 16px; font-size: 10px; }
   .header-note { display: none; }
